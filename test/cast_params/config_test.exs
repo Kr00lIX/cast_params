@@ -6,12 +6,25 @@ defmodule CastParams.ConfigTest do
 
   test "expect parse :integer param" do
     assert [param] = Config.configure([age: :integer])
+    assert %Param{name: "age", type: :integer} == param
 
-    assert %Param{name: :age, type: :integer} == param
+    assert [param] = Config.configure([age: :integer!])
+    assert %Param{name: "age", type: :integer, required: true} == param   
   end
 
   test "expect parse :boolean param" do
     assert [param] = Config.configure([terms: :boolean])
-    assert %Param{name: :terms, type: :boolean} == param
+    assert %Param{name: "terms", type: :boolean} == param
+
+    assert [param] = Config.configure([terms: :boolean!])
+    assert %Param{name: "terms", type: :boolean, required: true} == param
+  end
+
+  test "expect parse :string param" do
+    assert [param] = Config.configure([name: :string])
+    assert %Param{name: "name", type: :string} == param
+
+    assert [param] = Config.configure([name: :string!])
+    assert %Param{name: "name", type: :string, required: true} == param
   end
 end

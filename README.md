@@ -4,7 +4,8 @@ Casting params in controllers
 
 ```elixir
 defmodule ExampleController do
-  cast_params [category_id: :integer, terms: :boolean!] when action == :index
+  cast_params(category_id: :integer) when action == :index
+  cast_params(name: :string!, terms: :boolean!) when action == :create
 
   def index(conn, params) do
 
@@ -16,8 +17,6 @@ defmodule ExampleController do
 
 end
 ```
-
-
 
 
 ## Installation

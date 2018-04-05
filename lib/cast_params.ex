@@ -19,34 +19,19 @@ defmodule CastParams do
 
   """
 
-  defmacro __using__(_opts) do
+  defmacro __using__(_opts \\ []) do
     quote do
-      import CastParams
+      import CastParams      
     end     
   end
 
   defmacro cast_params(options) do
-    # todo parse when relation
-    result = 
-    options
-    |> IO.inspect(label: "cast params")
-    |> CastParams.Config.configure()
-    |> IO.inspect(label: "parse params")
+    # todo: parse guard
+    config = CastParams.Config.configure(options)
     
     quote do
-      unquote(options)
-      |> CastParams.Config.configure()
+      plug CastParams.Plug, unquote(Macro.escape(config))
     end
-
-    # parse params and check, validate syntax
-
-    # create plug to convert params
-  end
-
-  def configure!(options) do
-    IO.inspect(options, label: "configure")
-
-    options
   end
 
 end
