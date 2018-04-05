@@ -22,7 +22,8 @@ defmodule CastParams.Plug do
         raise %NotFound{message: "Error #{param.name} required", field: param.name}
       
       true ->
-        params
+        # set default param to nil
+        Map.put params, param.name, nil
     end
   end
 

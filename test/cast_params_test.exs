@@ -42,5 +42,14 @@ defmodule CastParamsTest do
       assert %{"name" => "Gaudí", "category_id" => 1010} = 
         call(ExampleSimpleRouter, %{"name" => "Gaudí", "category_id" => "1010"})
     end    
+
+    test "expect nulify params if not exists" do
+      assert %{"category_id" => 12345, "name" => nil} = 
+        call(ExampleSimpleRouter, %{"category_id" => "12345"})
+    
+      assert %{"terms" => nil, "skipped" => "234", "category_id" => nil, "name" => "Taras"} = 
+        call(ExampleSimpleRouter, %{"skipped" => "234", "name" => "Taras"})
+        
+    end
   end  
 end

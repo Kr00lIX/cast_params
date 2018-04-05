@@ -14,6 +14,7 @@ defmodule CastParams.Type do
   do: value
   defp do_cast(:integer, value) when is_binary(value) and value != "",
   do:  String.to_integer(value)
+  # ArgumentError
 
   defp do_cast(:boolean, value) when value in ~w(true 1), do: true
   defp do_cast(:boolean, value) when value in ~w(false 0), do: false
