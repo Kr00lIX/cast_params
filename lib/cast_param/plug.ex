@@ -1,6 +1,6 @@
 defmodule CastParams.Plug do
-  import Plug.Conn
-  alias CastParams.{Param, Type, Error, NotFound}
+  @behaviour Plug
+  alias CastParams.{Type, NotFound}
 
   def init(options) do
     options

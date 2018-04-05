@@ -7,9 +7,15 @@ defmodule CastParams.MixProject do
     [
       app: :cast_params,
       version: @version,
-      elixir: ">= 1.5.0",
+      elixir: ">= 1.4.0",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [coveralls: :test, "coveralls.travis": :test],
+      description: "CastParams creates plug for casting params to defined types.",
+      package: package(),
+      name: "CastParams",
+      docs: docs()
     ]
   end
 
@@ -25,7 +31,31 @@ defmodule CastParams.MixProject do
     [
       {:plug, "~> 1.0"},
 
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:excoveralls, "~> 0.8", only: :test},
+
+      {:dialyxir, "~> 0.5", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.17", only: :dev,  runtime: false}
+    ]
+  end
+
+  # Settings for publishing in Hex package manager:
+  defp package do
+    %{
+      package: "cast_params",
+      contributors: ["Kr00lIX"],
+      maintainers: ["Anatoliy Kovalchuk"],
+      links: %{github: "https://github.com/Kr00lIX/cast_params"},
+      licenses: ["LICENSE.md"],
+      files: ~w(lib LICENSE.md mix.exs README.md)
+    }
+  end
+
+  defp docs do
+    [
+      main: "CastParams",
+      source_ref: "v#{@version}",
+      extras: ["README.md"],
+      source_url: "https://github.com/Kr00lIX/cast_params"
     ]
   end
 end
