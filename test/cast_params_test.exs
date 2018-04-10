@@ -14,42 +14,41 @@ defmodule CastParamsTest do
     defmodule ExampleSimpleRouter do
       use Plug.Router
       use CastParams
-  
-      cast_params category_id: :integer, terms: :boolean
-      cast_params name: :string
-  
-      get "/", do: send_resp(conn, 200, "ok")
+
+      cast_params(category_id: :integer, terms: :boolean)
+      cast_params(name: :string)
+
+      get("/", do: send_resp(conn, 200, "ok"))
     end
 
     test "expect prepare valid existing params to type" do
-      assert %{"category_id" => 12345, "skipped" => "234"} = 
-        call(ExampleSimpleRouter, %{"category_id" => "12345", "skipped" => "234"})
-      
-      assert %{"terms" => true, "skipped" => "234"} = 
-        call(ExampleSimpleRouter, %{"terms" => "true", "skipped" => "234"})
-  
-      assert %{"terms" => false, "category_id" => 1} = 
-        call(ExampleSimpleRouter, %{"terms" => "false", "category_id" => 1})
-    end  
-    
+      assert %{"category_id" => 12345, "skipped" => "234"} =
+               call(ExampleSimpleRouter, %{"category_id" => "12345", "skipped" => "234"})
+
+      assert %{"terms" => true, "skipped" => "234"} =
+               call(ExampleSimpleRouter, %{"terms" => "true", "skipped" => "234"})
+
+      assert %{"terms" => false, "category_id" => 1} =
+               call(ExampleSimpleRouter, %{"terms" => "false", "category_id" => 1})
+    end
+
     test "receive error if can't prepare param" do
       assert_raise CastParams.Error, fn ->
         call(ExampleSimpleRouter, %{"category_id" => ""})
       end
     end
-    
+
     test "expect parse second definition" do
-      assert %{"name" => "Gaudí", "category_id" => 1010} = 
-        call(ExampleSimpleRouter, %{"name" => "Gaudí", "category_id" => "1010"})
-    end    
+      assert %{"name" => "Gaudí", "category_id" => 1010} =
+               call(ExampleSimpleRouter, %{"name" => "Gaudí", "category_id" => "1010"})
+    end
 
     test "expect nulify params if not exists" do
-      assert %{"category_id" => 12345, "name" => nil} = 
-        call(ExampleSimpleRouter, %{"category_id" => "12345"})
-    
-      assert %{"terms" => nil, "skipped" => "234", "category_id" => nil, "name" => "Taras"} = 
-        call(ExampleSimpleRouter, %{"skipped" => "234", "name" => "Taras"})
-        
+      assert %{"category_id" => 12345, "name" => nil} =
+               call(ExampleSimpleRouter, %{"category_id" => "12345"})
+
+      assert %{"terms" => nil, "skipped" => "234", "category_id" => nil, "name" => "Taras"} =
+               call(ExampleSimpleRouter, %{"skipped" => "234", "name" => "Taras"})
     end
-  end  
+  end
 end

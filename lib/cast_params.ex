@@ -21,17 +21,16 @@ defmodule CastParams do
 
   defmacro __using__(_opts \\ []) do
     quote do
-      import CastParams      
-    end     
+      import CastParams
+    end
   end
 
   defmacro cast_params(options) do
     # todo: parse guard
     config = CastParams.Config.configure(options)
-    
+
     quote do
-      plug CastParams.Plug, unquote(Macro.escape(config))
+      plug(CastParams.Plug, unquote(Macro.escape(config)))
     end
   end
-
 end

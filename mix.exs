@@ -30,11 +30,10 @@ defmodule CastParams.MixProject do
   defp deps do
     [
       {:plug, "~> 1.0"},
-
+      {:decimal, "~> 1.2"},
       {:excoveralls, "~> 0.8", only: :test},
-
       {:dialyxir, "~> 0.5", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.17", only: :dev,  runtime: false}
+      {:ex_doc, "~> 0.17", only: :dev, runtime: false}
     ]
   end
 

@@ -1,27 +1,99 @@
 defmodule CastParams.Type do
+  @primitive_types [:boolean, :integer, :string, :float, :decimal]
+  # @composite ~w(array map in embed)a
 
-  alias CastParams.Error
+  @typedoc "An Ecto type, primitive or custom."
+  @type t :: primitive | custom
 
-  @primitive_types [:boolean, :integer, :string]
+  @typedoc "Primitive  types (handled by Ecto)."
+  @type primitive :: base | composite
+
+  @typedoc "Custom types are represented by user-defined modules."
+  @type custom :: atom
+
+  @typep base :: :integer | :float | :boolean | :string | :decimal
+
+  @typep composite :: {:array, t} | {:map, t}
+
+  @doc """
+  Returns the type name for the custom type.
+  """
+  @callback type :: t
+
+  @doc """
+  Casts the given input to the custom type.
+  """
+  @callback cast(term) :: {:ok, term} | {:error, reason :: term()}
 
   def primitive_types(), do: @primitive_types
-  
-  def cast(type, value) do
-    do_cast(type, value)
+
+  @doc """
+  Casts the given input to the custom type.
+
+
+  ## Examples
+      iex> cast(:integer, "1.0")
+      {:ok, 1}
+
+      iex> cast(:string, nil)
+      {:ok, ""}
+
+      iex> cast(:integer, 1)
+      {:ok, 1}
+      iex> cast(:integer, "1")
+      {:ok, 1}
+      iex> cast(:integer, "1.0")
+      {:ok, 1}
+  """
+  @spec cast(t, term()) :: {:ok, term()} | {:error, term()}
+  def cast(type, value) when type in @primitive_types do
+    do_cast(type, value)    
   end
 
-  defp do_cast(:integer, value) when is_integer(value),
-  do: value
-  defp do_cast(:integer, value) when is_binary(value) and value != "",
-  do:  String.to_integer(value)
-  # ArgumentError
+  @spec do_cast(type :: atom(), value :: term()) :: {:ok, value :: term()} | {:error, reason :: term()}
+  defp do_cast(type, value)
 
-  defp do_cast(:boolean, value) when value in ~w(true 1), do: true
-  defp do_cast(:boolean, value) when value in ~w(false 0), do: false
-  
-  defp do_cast(:string, value) when is_binary(value), do: value
-
-  defp do_cast(type, value) do
-    raise Error, message: "Error cast `#{inspect value}` value to #{inspect type}"
+  defp do_cast(:integer, value) when is_integer(value), do: {:ok, value}
+  defp do_cast(:integer, value) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, _tail} -> {:ok, int}
+      _ -> {:error, :invalid}
+    end
   end
+
+  defp do_cast(:integer, value) when is_integer(value), do: {:ok, value}
+  defp do_cast(:integer, value) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, ""} -> {:ok, int}
+      _ -> {:error, :invalid}
+    end
+  end
+
+  defp do_cast(:boolean, value) when is_boolean(value), do: {:ok, value}
+  defp do_cast(:boolean, value) when value in ["true", "1"], do: {:ok, true}
+  defp do_cast(:boolean, value) when value in ["false", "0"], do: {:ok, false}
+
+  defp do_cast(:string, value) when is_binary(value), do: {:ok, value}
+  defp do_cast(:string, value) do
+    {:ok, to_string(value)}
+  end
+
+  defp do_cast(:float, value) when is_float(value), do: {:ok, value}
+  defp do_cast(:float, value) when is_binary(value) do
+    case Float.parse(value) do
+      {float, ""} -> {:ok, float}
+      _           -> {:error, :invalid}
+    end
+  end
+  defp do_cast(:float, value) when is_integer(value), do: {:ok, value + 0.0}
+  
+  defp do_cast(:decimal, %Decimal{}=value), do: {:ok, value}
+  defp do_cast(:decimal, term) when is_binary(term) do
+    Decimal.parse(term)
+  end
+  defp do_cast(:decimal, term) when is_number(term) do
+    {:ok, Decimal.new(term)}
+  end
+
+  defp do_cast(_type, _value), do: {:error, :invalid_type}
 end
