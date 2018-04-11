@@ -3,19 +3,34 @@ defmodule CastParams do
   Plug for casting request params to defined types.
 
   ## Usage
-  ```
+
+  ```elixir
   defmodule AccountController do
-    cast_params [category_id: :integer, terms: :boolean!] when action == :show
+    use AppWeb, :controller
+    use CastParams
 
-    # support namespace
-    cast_params [user: [category_id: :integer, terms: :boolean!]] when action == :user
+    # define params types
+    # :category_id - required integer param (raise CastParams.NotFound if not exists)
+    # :weight - float param, set nil if doesn't exists
+    cast_params category_id: :integer!, weight: :float
 
-    
-    def show(conn, %{category_id: category_id, terms: terms}) do
+    # defining for show action
+    # *:name* - is required string param
+    # *:terms* - is boolean param
+    cast_params name: :string!, terms: :boolean when action == :show
       
+    # received prepared params
+    def index(conn, %{"category_id" => category_id, "weight" => weight} = params) do
+    end
+
+    # received prepared params
+    def show(conn, %{"category_id" => category_id, "terms" => terms, "weight" => weight} = params) do      
     end
   end
   ```
+
+  ## Supported Types
+    #{CastParams.Type.primitive_types() |> Enum.map(&inspect/1) |> Enum.join(", ")}
 
   """
 

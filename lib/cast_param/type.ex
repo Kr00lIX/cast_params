@@ -2,7 +2,7 @@ defmodule CastParams.Type do
   @primitive_types [:boolean, :integer, :string, :float, :decimal]
   # @composite ~w(array map in embed)a
 
-  @typedoc "An Ecto type, primitive or custom."
+  @typedoc "A type, primitive or custom."
   @type t :: primitive | custom
 
   @typedoc "Primitive  types (handled by Ecto)."

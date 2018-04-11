@@ -8,22 +8,29 @@
 Casting params in Phoenix controllers.
 
 ```elixir
-defmodule AppWeb.ExampleController do
-  use AppWeb, :controller
-  use CastParams
+  defmodule AccountController do
+    use AppWeb, :controller
+    use CastParams
 
-  cast_params(category_id: :integer) when action == :index
-  cast_params(name: :string!, terms: :boolean!) when action == :create
+    # define params types
+    # :category_id - required integer param (raise CastParams.NotFound if not exists)
+    # :weight - float param, set nil if doesn't exists
+    cast_params category_id: :integer!, weight: :float
 
-  def index(conn, %{"category_id" => category_id}) do
-    # some code
+    # defining for show action
+    # *:name* - is required string param
+    # *:terms* - is boolean param
+    cast_params name: :string!, terms: :boolean when action == :show
+      
+    # received prepared params
+    def index(conn, %{"category_id" => category_id, "weight" => weight} = params) do
+    end
+
+    # received prepared params
+    def show(conn, %{"category_id" => category_id, "terms" => terms, "weight" => weight} = params) do      
+    end
   end
-
-  def create(conn, %{"name" => name, "terms" => terms} = params) do
-    # some code
-  end
-end
-```
+  ```
 
 Documentation can be found at [https://hexdocs.pm/cast_params](https://hexdocs.pm/cast_params/).
 

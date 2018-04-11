@@ -1,4 +1,5 @@
 defmodule CastParams.Schema do
+
   alias CastParams.{Param, Error, Type}
 
   @primitive_types Type.primitive_types()
@@ -6,7 +7,7 @@ defmodule CastParams.Schema do
   @required_names Map.keys(@required_to_type)
 
   @doc """
-
+  Init schema
 
   ## Examples
       iex> init([age: :integer])
@@ -22,11 +23,13 @@ defmodule CastParams.Schema do
         %CastParams.Param{name: "age", required: false, type: :integer},
       ]
   """
-  def init(options) do
-    Enum.map(options, &config_param/1)
+  @spec init(options :: list()) :: [Param.t]
+  def init(options) when is_list(options) do
+    Enum.map(options, &init_param/1)
   end
 
-  defp config_param({name, raw_type}) do
+  @spec init_param({atom() | String.t, atom()}) :: Param.t | no_return()
+  defp init_param({name, raw_type}) do
     parse(name, raw_type)
   end
 
