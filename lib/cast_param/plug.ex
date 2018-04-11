@@ -15,14 +15,15 @@ defmodule CastParams.Plug do
 
   @spec prepare(CastParams.Param.t(), map()) :: map() | no_return()
   defp prepare(param, params) do
-    raw_value = params[param.name]
+    names = String.split(param.name, ".")
+    raw_value = get_param(params, names)
 
     cond do
-      Map.has_key?(params, param.name) ->
+      raw_value != nil ->
         Type.cast(param.type, raw_value)
         |> case do
           {:ok, value} ->
-            Map.put(params, param.name, value)
+            update_param(params, names, value)
 
           {:error, reason} ->
             raise Error, "Error casting `raw_value` to `#{param.name}` #{param.type} : #{inspect(reason)}"
@@ -36,7 +37,15 @@ defmodule CastParams.Plug do
         # todo: move to call
 
         # set default param to nil
-        Map.put(params, param.name, nil)
+        update_param(params, names, nil)
     end
+  end
+
+  defp get_param(params, keys) do
+    get_in params, keys
+  end
+
+  defp update_param(params, keys, value) do
+    put_in(params, keys, value)
   end
 end

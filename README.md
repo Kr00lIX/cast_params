@@ -43,7 +43,7 @@ by adding `cast_params` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:cast_params, ">= 0.0.1"}
+    {:cast_params, ">= 0.0.1"} 
   ]
 end
 ```

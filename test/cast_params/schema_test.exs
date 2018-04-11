@@ -30,10 +30,43 @@ defmodule CastParams.SchemaTest do
       assert %Param{name: "name", type: :string, required: true} == param
     end
 
+    test "expect parse :float param" do
+      assert [param] = Schema.init(weight: :float)
+      assert %Param{name: "weight", type: :float} == param
+
+      assert [param] = Schema.init(weight: :float!)
+      assert %Param{name: "weight", type: :float, required: true} == param
+    end
+
+    test "expect parse :decimal param" do
+      assert [param] = Schema.init(weight: :decimal)
+      assert %Param{name: "weight", type: :decimal} == param
+
+      assert [param] = Schema.init(weight: :decimal!)
+      assert %Param{name: "weight", type: :decimal, required: true} == param
+    end
+
     test "expect raise error for undefined types" do
       assert_raise Error, fn ->
         Schema.init(name: :invalid_type)
       end
+    end
+  end
+
+  describe "(simple definition with namespace)" do
+    test "expect parse namespace param" do
+      assert [
+        %Param{name: "user.age", type: :integer},
+        %Param{name: "user.name", type: :string},
+        %Param{name: "category_id", type: :integer, required: true}
+      ] == Schema.init(user: [age: :integer, name: :string], category_id: :integer!)
+
+      assert [
+        %Param{name: "user.country.id", type: :integer},
+        %Param{name: "user.country.name", type: :string},
+        %Param{name: "user.name", type: :string},
+        %Param{name: "category_id", type: :integer, required: true}
+      ] == Schema.init(user: [country: [id: :integer, name: :string], name: :string], category_id: :integer!)
     end
   end
 end

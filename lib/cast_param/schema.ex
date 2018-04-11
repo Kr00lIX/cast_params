@@ -25,34 +25,68 @@ defmodule CastParams.Schema do
   """
   @spec init(options :: list()) :: [Param.t]
   def init(options) when is_list(options) do
-    Enum.map(options, &init_param/1)
+    # Enum.into(options, %{})
+    options
+    |> Enum.reduce([], &init_item(%Param{}, &1, &2))
+    |> Enum.reverse()
   end
 
-  @spec init_param({atom() | String.t, atom()}) :: Param.t | no_return()
-  defp init_param({name, raw_type}) do
-    parse(name, raw_type)
+  defp init_item(param, {name, type}, acc) when is_atom(name) and is_atom(type) do
+    updated_param = param
+    |> parse_name(name)
+    |> parse_type(type)
+
+    [updated_param | acc]
+  end
+  defp init_item(param, {name, options}, acc) when is_list(options) do
+    updated_param = parse_name(param, name)
+
+    options
+    # Enum.into(options, %{})
+    |> Enum.reduce(acc, &init_item(updated_param, &1, &2))
   end
 
-  defp parse(name, raw_type) when raw_type in @primitive_types do
-    %Param{
-      name: parse_name(name),
-      type: raw_type
-    }
+  # @spec init_param({atom() | String.t, atom()}, list()) :: Param.t | no_return()
+  # defp init_param({name, options}, acc) when is_list(options) do
+  #   Enum.into(options, %{})
+
+  #   parse(name, raw_type)
+  # end
+  # defp init_param({name, raw_type}, acc) do
+  #   param = parse(name, raw_type)
+  #   [param | acc]
+  # end
+
+
+  # @spec init_param({atom() | String.t, atom()}, list()) :: Param.t | no_return()
+  # defp init_param({name, options}, acc) when is_list(options) do
+  #   Enum.into(options, %{})
+
+  #   parse(name, raw_type)
+  # end
+  # defp init_param({name, raw_type}, acc) do
+  #   param = parse(name, raw_type)
+  #   [param | acc]
+  # end
+
+  
+  defp parse_name(%{name: init_name}=param, name) when is_atom(name) do
+    parsed_name = to_string(name)
+    # updated_name = if init_name, do: "#{init_name}.#{parsed_name}", else: parsed_name
+    updated_name = init_name && "#{init_name}.#{parsed_name}" || parsed_name
+    Map.put(param, :name, updated_name)
   end
 
-  defp parse(name, raw_type) when raw_type in @required_names do
-    %Param{
-      name: parse_name(name),
-      type: @required_to_type[raw_type],
-      required: true
-    }
+  @spec parse_type(Param.t, atom()) :: Param.t
+  defp parse_type(param, type) when type in @primitive_types do
+    Map.put(param, :type, type)
   end
-
-  defp parse(name, raw_type) do
-    raise Error, "Error invalid `#{raw_type}` type for `#{name}` name."
+  defp parse_type(param, raw_type) when raw_type in @required_names do
+    param
+    |> Map.put(:type, @required_to_type[raw_type])
+    |> Map.put(:required, true)
   end
-
-  defp parse_name(name) do
-    to_string(name)
+  defp parse_type(param, type) do
+    raise Error, "Error invalid `#{type}` type for `#{param.name}` name."
   end
 end
