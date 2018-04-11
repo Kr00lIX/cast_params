@@ -19,6 +19,8 @@ defmodule CastParams do
 
   """
 
+  alias CastParams.{Schema, Plug}
+
   defmacro __using__(_opts \\ []) do
     quote do
       import CastParams
@@ -35,40 +37,41 @@ defmodule CastParams do
   end
 
   defmacro cast_params(options) do
-    {params, guards} = detect_attached_guards(options) 
+    {params, guards} = detect_attached_guards(options)
     cast_params(params, guards)
   end
 
   defp cast_params(options, guards) do
-    config = CastParams.Config.configure(options)
+    config = Schema.init(options)
 
-    result = 
-    if guards do
-      quote location: :keep do
-        plug CastParams.Plug, unquote(Macro.escape config) when unquote(guards)
-      end    
-    else
-      quote location: :keep do
-        plug CastParams.Plug, unquote(Macro.escape config)
-      end    
-    end
+    result =
+      if guards do
+        quote location: :keep do
+          plug(Plug, unquote(Macro.escape(config)) when unquote(guards))
+        end
+      else
+        quote location: :keep do
+          plug(Plug, unquote(Macro.escape(config)))
+        end
+      end
 
     # result
     # |> IO.inspect
     # |> Macro.to_string
     # |> IO.puts
 
-    result 
+    result
   end
 
   # detect attached guard to the end of options list
   #  `cast_params id: :integer when action == :index`
   defp detect_attached_guards(args) do
-    Enum.reduce(args, {[], nil}, fn 
+    Enum.reduce(args, {[], nil}, fn
       {key, {:when, _env, [value, condition]}}, {ast, _guard} ->
         {[{key, value} | ast], condition}
+
       {key, value}, {ast, guard} ->
         {[{key, value} | ast], guard}
-    end)    
+    end)
   end
 end

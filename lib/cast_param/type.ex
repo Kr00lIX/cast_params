@@ -31,7 +31,7 @@ defmodule CastParams.Type do
   Casts the given input to the custom type.
 
   ## Basic types
-      #{inspect @primitive_types}
+      #{inspect(@primitive_types)}
 
   ## Example
       iex> cast(:integer, "1.0")
@@ -64,13 +64,14 @@ defmodule CastParams.Type do
   """
   @spec cast(t, term()) :: {:ok, term()} | {:error, term()}
   def cast(type, value) when type in @primitive_types do
-    do_cast(type, value)    
+    do_cast(type, value)
   end
 
   @spec do_cast(type :: atom(), value :: term()) :: {:ok, value :: term()} | {:error, reason :: term()}
   defp do_cast(type, value)
 
   defp do_cast(:integer, value) when is_integer(value), do: {:ok, value}
+
   defp do_cast(:integer, value) when is_binary(value) do
     case Integer.parse(value) do
       {int, _tail} -> {:ok, int}
@@ -83,23 +84,28 @@ defmodule CastParams.Type do
   defp do_cast(:boolean, value) when value in ["false", "0"], do: {:ok, false}
 
   defp do_cast(:string, value) when is_binary(value), do: {:ok, value}
+
   defp do_cast(:string, value) do
     {:ok, to_string(value)}
   end
 
   defp do_cast(:float, value) when is_float(value), do: {:ok, value}
+
   defp do_cast(:float, value) when is_binary(value) do
     case Float.parse(value) do
       {float, ""} -> {:ok, float}
-      _           -> {:error, :invalid}
+      _ -> {:error, :invalid}
     end
   end
+
   defp do_cast(:float, value) when is_integer(value), do: {:ok, value + 0.0}
-  
-  defp do_cast(:decimal, %Decimal{}=value), do: {:ok, value}
+
+  defp do_cast(:decimal, %Decimal{} = value), do: {:ok, value}
+
   defp do_cast(:decimal, term) when is_binary(term) do
     Decimal.parse(term)
   end
+
   defp do_cast(:decimal, term) when is_number(term) do
     {:ok, Decimal.new(term)}
   end

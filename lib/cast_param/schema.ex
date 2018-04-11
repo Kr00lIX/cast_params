@@ -1,4 +1,4 @@
-defmodule CastParams.Config do
+defmodule CastParams.Schema do
   alias CastParams.{Param, Error, Type}
 
   @primitive_types Type.primitive_types()
@@ -9,20 +9,20 @@ defmodule CastParams.Config do
 
 
   ## Examples
-      iex> configure([age: :integer])
+      iex> init([age: :integer])
       [%CastParams.Param{name: "age", type: :integer}]
 
-      iex> configure([age: :integer!])
+      iex> init([age: :integer!])
       [%CastParams.Param{name: "age", type: :integer, required: true}]
 
-      iex> configure([terms: :boolean!, name: :string, age: :integer])
+      iex> init([terms: :boolean!, name: :string, age: :integer])
       [
         %CastParams.Param{name: "terms", type: :boolean, required: true},
         %CastParams.Param{name: "name", required: false, type: :string},
         %CastParams.Param{name: "age", required: false, type: :integer},
       ]
   """
-  def configure(options) do
+  def init(options) do
     Enum.map(options, &config_param/1)
   end
 

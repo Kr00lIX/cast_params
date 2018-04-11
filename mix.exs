@@ -15,7 +15,8 @@ defmodule CastParams.MixProject do
       description: "CastParams creates plug for casting params to defined types.",
       package: package(),
       name: "CastParams",
-      docs: docs()
+      docs: docs(),
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
@@ -58,4 +59,8 @@ defmodule CastParams.MixProject do
       source_url: "https://github.com/Kr00lIX/cast_params"
     ]
   end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 end
