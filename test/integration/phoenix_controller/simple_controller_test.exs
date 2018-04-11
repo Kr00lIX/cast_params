@@ -6,7 +6,7 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
   describe "use for one action with guard" do
     defmodule ExampleController do
       use Phoenix.Controller
-      use CastParams
+      use CastParams, nulify: false
 
       cast_params([category_id: :integer, terms: :boolean] when action == :index)
 
@@ -20,13 +20,18 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
     end
 
     test "expect check guards for index action" do
-      params = %{"category_id" => "1", "terms" => "true"}
-      assert %{"category_id" => 1, "terms" => true} = action_params(ExampleController, :index, params)
+      assert %{"category_id" => 1, "terms" => true} = 
+          action_params(ExampleController, :index, %{"category_id" => "1", "terms" => "true"})      
     end
 
-    test "skip cast_params plug for show action" do
-      params = %{"category_id" => "1", "terms" => "true"}
-      assert %{"category_id" => "1", "terms" => "true"} = action_params(ExampleController, :show, params)
+    test "skip cast_params plug for show action" do      
+      assert %{"category_id" => "1", "terms" => "true"} = 
+          action_params(ExampleController, :show, %{"category_id" => "1", "terms" => "true"})
+    end
+
+    test "doesn't nulify param" do
+      assert %{"category_id" => 1} == action_params(ExampleController, :index, %{"category_id" => "1"})
+      assert %{"terms" => true} == action_params(ExampleController, :index, %{"terms" => "1"})
     end
   end
 

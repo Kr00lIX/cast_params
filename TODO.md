@@ -1,5 +1,4 @@
 # TODO
-* Set default param to nil (configure nulify: true)
 * Add interface for defining custom types
 * Add full format for defining additional params 
   ```

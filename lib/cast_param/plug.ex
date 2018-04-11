@@ -1,20 +1,19 @@
 defmodule CastParams.Plug do
   @behaviour Plug
-  alias CastParams.{Type, NotFound, Error}
+  alias CastParams.{Type, NotFound, Error, Config}
 
-  def init(options) do
-    config = []
-    {options, config}
+  def init({schema, config}) do
+    {schema, config}
   end
 
-  def call(conn, {options, _config}) do
-    prepared_params = Enum.reduce(options, conn.params, &prepare/2)
+  def call(conn, {schema, config}) do
+    prepared_params = Enum.reduce(schema, conn.params, &prepare_param(&1, &2, config))
 
     Map.put(conn, :params, prepared_params)
   end
 
-  @spec prepare(CastParams.Param.t(), map()) :: map() | no_return()
-  defp prepare(%{names: names}=param, params) do
+  @spec prepare_param(CastParams.Param.t(), map(), Config.t) :: map() | no_return()
+  defp prepare_param(%{names: names}=param, params, config) do
     raw_value = get_param(params, names)
 
     cond do
@@ -32,11 +31,11 @@ defmodule CastParams.Plug do
         # todo: change to error
         raise %NotFound{message: "Error #{names} required", field: param.names}
 
-      true ->
-        # todo: move to call
-
-        # set default param to nil
+      config.nulify ->
         update_param(params, names, nil)
+
+      true ->
+        params
     end
   end
 

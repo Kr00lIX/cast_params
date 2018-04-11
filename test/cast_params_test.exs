@@ -1,12 +1,12 @@
 defmodule CastParamsTest do
   use ExUnit.Case, async: true
-  import CastParams
+  use CastParams
   doctest CastParams
 
   describe ".cast_params" do
-    def plug(plug, options) do
+    def plug(plug, {schema, _config}) do
       assert CastParams.Plug == plug
-      options
+      schema
     end
 
     test "create call guard" do

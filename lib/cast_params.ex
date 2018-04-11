@@ -34,10 +34,11 @@ defmodule CastParams do
 
   """
 
-  alias CastParams.{Schema, Plug}
+  alias CastParams.{Schema, Plug, Config}
 
-  defmacro __using__(_opts \\ []) do
+  defmacro __using__(opts \\ []) do
     quote do
+      @config Config.init(unquote(opts))
       import CastParams
     end
   end
@@ -57,16 +58,16 @@ defmodule CastParams do
   end
 
   defp cast_params(options, guards) do
-    config = Schema.init(options)
+    schema = Schema.init(options)
 
     result =
       if guards do
         quote location: :keep do
-          plug(Plug, unquote(Macro.escape(config)) when unquote(guards))
+          plug(Plug, {unquote(Macro.escape(schema)), @config} when unquote(guards))
         end
       else
         quote location: :keep do
-          plug(Plug, unquote(Macro.escape(config)))
+          plug(Plug, {unquote(Macro.escape(schema)), @config})
         end
       end
 
