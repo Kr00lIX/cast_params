@@ -3,7 +3,7 @@ defmodule CastParams.ConfigTest do
   doctest CastParams.Config, import: true
   import CastParams.Config
 
-  alias CastParams.{Config, Param}
+  alias CastParams.{Config, Param, Error}
 
   describe "(simple definition)" do
     test "expect parse :integer param" do
@@ -28,6 +28,12 @@ defmodule CastParams.ConfigTest do
 
       assert [param] = Config.configure(name: :string!)
       assert %Param{name: "name", type: :string, required: true} == param
+    end
+
+    test "expect raise error for undefined types" do
+      assert_raise Error, fn ->
+        Config.configure(name: :invalid_type)
+      end
     end
   end
 end

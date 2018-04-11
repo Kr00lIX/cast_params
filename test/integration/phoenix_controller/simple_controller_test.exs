@@ -60,7 +60,6 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
 
       assert %{"id" => 1, "age" => nil} ==
         action(ThreeCastsController, :index, %{"id" => "1"})
-
     end
   
     test "skip cast_params plug for show action" do
@@ -68,8 +67,17 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
         action(ThreeCastsController, :show, %{"id" => 1, "name" => "J"})
 
       assert %{"amount" => 4.99, "id" => 1, "name" => "J"} = 
-        action(ThreeCastsController, :show, %{"id" => 1, "name" => "J", "amount" => "4.99"})
-  
+        action(ThreeCastsController, :show, %{"id" => 1, "name" => "J", "amount" => "4.99"})      
+    end
+
+    test "raise error for required params" do
+      assert_raise CastParams.NotFound, fn ->
+        action(ThreeCastsController, :index, %{})
+      end
+
+      assert_raise CastParams.NotFound, fn ->
+        action(ThreeCastsController, :show, %{"id" => 1, "amount" => "4.99"})
+      end
     end
   end
 

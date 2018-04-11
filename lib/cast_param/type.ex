@@ -78,14 +78,6 @@ defmodule CastParams.Type do
     end
   end
 
-  defp do_cast(:integer, value) when is_integer(value), do: {:ok, value}
-  defp do_cast(:integer, value) when is_binary(value) do
-    case Integer.parse(value) do
-      {int, ""} -> {:ok, int}
-      _ -> {:error, :invalid}
-    end
-  end
-
   defp do_cast(:boolean, value) when is_boolean(value), do: {:ok, value}
   defp do_cast(:boolean, value) when value in ["true", "1"], do: {:ok, true}
   defp do_cast(:boolean, value) when value in ["false", "0"], do: {:ok, false}
