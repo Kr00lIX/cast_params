@@ -10,71 +10,48 @@ defmodule CastParams.Schema do
   Init schema
 
   ## Examples
-      iex> init([age: :integer])
-      [%CastParams.Param{name: "age", type: :integer}]
+      iex> init(age: :integer)
+      [%CastParams.Param{names: ["age"], type: :integer}]
 
       iex> init([age: :integer!])
-      [%CastParams.Param{name: "age", type: :integer, required: true}]
+      [%CastParams.Param{names: ["age"], type: :integer, required: true}]
 
       iex> init([terms: :boolean!, name: :string, age: :integer])
       [
-        %CastParams.Param{name: "terms", type: :boolean, required: true},
-        %CastParams.Param{name: "name", required: false, type: :string},
-        %CastParams.Param{name: "age", required: false, type: :integer},
+        %CastParams.Param{names: ["terms"], type: :boolean, required: true},
+        %CastParams.Param{names: ["name"], required: false, type: :string},
+        %CastParams.Param{names: ["age"], required: false, type: :integer},
       ]
   """
   @spec init(options :: list()) :: [Param.t]
   def init(options) when is_list(options) do
-    # Enum.into(options, %{})
     options
     |> Enum.reduce([], &init_item(%Param{}, &1, &2))
-    |> Enum.reverse()
+    |> Enum.reduce([], fn(param, acc)->
+      updated_item = param
+      |> Map.update!(:names, &Enum.reverse/1)
+
+      [updated_item | acc]
+    end)
   end
 
   defp init_item(param, {name, type}, acc) when is_atom(name) and is_atom(type) do
     updated_param = param
-    |> parse_name(name)
+    |> parse_names(name)
     |> parse_type(type)
 
     [updated_param | acc]
   end
   defp init_item(param, {name, options}, acc) when is_list(options) do
-    updated_param = parse_name(param, name)
+    updated_param = parse_names(param, name)
 
     options
-    # Enum.into(options, %{})
     |> Enum.reduce(acc, &init_item(updated_param, &1, &2))
   end
-
-  # @spec init_param({atom() | String.t, atom()}, list()) :: Param.t | no_return()
-  # defp init_param({name, options}, acc) when is_list(options) do
-  #   Enum.into(options, %{})
-
-  #   parse(name, raw_type)
-  # end
-  # defp init_param({name, raw_type}, acc) do
-  #   param = parse(name, raw_type)
-  #   [param | acc]
-  # end
-
-
-  # @spec init_param({atom() | String.t, atom()}, list()) :: Param.t | no_return()
-  # defp init_param({name, options}, acc) when is_list(options) do
-  #   Enum.into(options, %{})
-
-  #   parse(name, raw_type)
-  # end
-  # defp init_param({name, raw_type}, acc) do
-  #   param = parse(name, raw_type)
-  #   [param | acc]
-  # end
-
   
-  defp parse_name(%{name: init_name}=param, name) when is_atom(name) do
+  defp parse_names(%{names: names}=param, name) when is_atom(name) do
     parsed_name = to_string(name)
-    # updated_name = if init_name, do: "#{init_name}.#{parsed_name}", else: parsed_name
-    updated_name = init_name && "#{init_name}.#{parsed_name}" || parsed_name
-    Map.put(param, :name, updated_name)
+    %{param | names: [parsed_name | names]}
   end
 
   @spec parse_type(Param.t, atom()) :: Param.t
@@ -87,6 +64,6 @@ defmodule CastParams.Schema do
     |> Map.put(:required, true)
   end
   defp parse_type(param, type) do
-    raise Error, "Error invalid `#{type}` type for `#{param.name}` name."
+    raise Error, "Error invalid `#{type}` type for `#{param.names}` name."
   end
 end

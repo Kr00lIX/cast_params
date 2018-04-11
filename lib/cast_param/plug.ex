@@ -14,8 +14,7 @@ defmodule CastParams.Plug do
   end
 
   @spec prepare(CastParams.Param.t(), map()) :: map() | no_return()
-  defp prepare(param, params) do
-    names = String.split(param.name, ".")
+  defp prepare(%{names: names}=param, params) do
     raw_value = get_param(params, names)
 
     cond do
@@ -26,12 +25,12 @@ defmodule CastParams.Plug do
             update_param(params, names, value)
 
           {:error, reason} ->
-            raise Error, "Error casting `raw_value` to `#{param.name}` #{param.type} : #{inspect(reason)}"
+            raise Error, "Error casting `raw_value` to `#{names}` #{param.type} : #{inspect(reason)}"
         end
 
       param.required ->
         # todo: change to error
-        raise %NotFound{message: "Error #{param.name} required", field: param.name}
+        raise %NotFound{message: "Error #{names} required", field: param.names}
 
       true ->
         # todo: move to call

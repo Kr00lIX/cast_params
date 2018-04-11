@@ -10,7 +10,7 @@ defmodule CastParamsTest do
     end
 
     test "create call guard" do
-      assert [%CastParams.Param{name: "age", required: false, type: :integer}] = cast_params(age: :integer)
+      assert [%CastParams.Param{names: ["age"], required: false, type: :integer}] = cast_params(age: :integer)
     end
   end
 end
