@@ -2,12 +2,16 @@ language: elixir
 sudo: false
 elixir: 1.6
 otp_release: 20.1
+cache:
+  directories:
+    - deps
+    - _build/test
 matrix:
   include:
     - elixir: 1.6
-      otp_release: 20.1
+      otp_release: 20.2
     - elixir: 1.5
-      otp_release: 18.1  
+      otp_release: 20.1  
     - elixir: 1.4
       otp_release: 18.1  
 
