@@ -1,6 +1,7 @@
 defmodule CastParamsTest do
   use ExUnit.Case, async: true
   use Plug.Test
+  import CastParams
   doctest CastParams
 
   def call(router, params) do
@@ -15,8 +16,8 @@ defmodule CastParamsTest do
       use Plug.Router
       use CastParams
 
-      cast_params(category_id: :integer, terms: :boolean)
-      cast_params(name: :string)
+      cast_params category_id: :integer, terms: :boolean
+      cast_params [name: :string]
 
       get("/", do: send_resp(conn, 200, "ok"))
     end
@@ -49,6 +50,17 @@ defmodule CastParamsTest do
 
       assert %{"terms" => nil, "skipped" => "234", "category_id" => nil, "name" => "Taras"} =
                call(ExampleSimpleRouter, %{"skipped" => "234", "name" => "Taras"})
+    end
+  end
+
+  describe ".cast_params" do
+    def plug(plug, options) do
+      assert CastParams.Plug == plug
+      options      
+    end
+
+    test "create call guard" do
+      assert [%CastParams.Param{name: "age", required: false, type: :integer}] = cast_params([age: :integer])
     end
   end
 end

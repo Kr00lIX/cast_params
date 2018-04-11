@@ -25,12 +25,50 @@ defmodule CastParams do
     end
   end
 
+  @doc """
+  Stores a plug to be executed as part of the plug pipeline.
+  """
+  defmacro cast_params(args)
+
+  defmacro cast_params({:when, _, [options, guards]}) do
+    cast_params(options, guards)
+  end
+
   defmacro cast_params(options) do
-    # todo: parse guard
+    {params, guards} = detect_attached_guards(options) 
+    cast_params(params, guards)
+  end
+
+  defp cast_params(options, guards) do
     config = CastParams.Config.configure(options)
 
-    quote do
-      plug(CastParams.Plug, unquote(Macro.escape(config)))
+    result = 
+    if guards do
+      quote location: :keep do
+        plug CastParams.Plug, unquote(Macro.escape config) when unquote(guards)
+      end    
+    else
+      quote location: :keep do
+        plug CastParams.Plug, unquote(Macro.escape config)
+      end    
     end
+
+    # result
+    # |> IO.inspect
+    # |> Macro.to_string
+    # |> IO.puts
+
+    result 
+  end
+
+  # detect attached guard to the end of options list
+  #  `cast_params id: :integer when action == :index`
+  defp detect_attached_guards(args) do
+    Enum.reduce(args, {[], nil}, fn 
+      {key, {:when, _env, [value, condition]}}, {ast, _guard} ->
+        {[{key, value} | ast], condition}
+      {key, value}, {ast, guard} ->
+        {[{key, value} | ast], guard}
+    end)    
   end
 end
