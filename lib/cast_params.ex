@@ -44,7 +44,7 @@ defmodule CastParams do
 
   @typedoc """
   Options for use CastParams
-  
+
   """
   @type options :: [
     nulify: boolean()
@@ -61,7 +61,7 @@ defmodule CastParams do
   @doc """
   Stores a plug to be executed as part of the plug pipeline.
   """
-  @spec cast_params(Schema.t) :: [Param.t]
+  @spec cast_params(Schema.t) :: Macro.t
   defmacro cast_params(schema)
 
   defmacro cast_params({:when, _, [options, guards]}) do
