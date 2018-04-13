@@ -1,11 +1,15 @@
 defmodule CastParams.Type do
+  @moduledoc """
+  Define casting types
+  """
+
   @primitive_types [:boolean, :integer, :string, :float, :decimal]
   # @composite ~w(array map in embed)a
 
   @typedoc "A type, primitive or custom."
   @type t :: primitive | custom
 
-  @typedoc "Primitive  types (handled by Ecto)."
+  @typedoc "Primitive types."
   @type primitive :: base | composite
 
   @typedoc "Custom types are represented by user-defined modules."

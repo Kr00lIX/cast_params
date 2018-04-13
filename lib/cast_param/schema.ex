@@ -1,4 +1,15 @@
 defmodule CastParams.Schema do
+  @moduledoc """
+  Defines a params schema for a plug.
+
+  A params schema is just a keyword list where keys are the parameter name 
+  and the value is either a valid `t:CastParams.Type` (ending with a ! to mark the parameter as required).
+
+  ## Example
+
+      CastParams.Schema.init(age: :integer, terms: :boolean!, name: :string, weight: :float)
+  
+  """
 
   alias CastParams.{Param, Error, Type}
 
