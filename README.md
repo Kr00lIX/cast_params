@@ -1,14 +1,23 @@
-# CastParams
+[CastParams][docs]
 -----
-[![Build Status](https://travis-ci.org/Kr00lIX/cast_params.svg?branch=master)](https://travis-ci.org/Kr00lIX/cast_params)
-[![Hex pm](https://img.shields.io/hexpm/v/cast_params.svg?style=flat)](https://hex.pm/packages/cast_params)
-[![Coverage Status](https://coveralls.io/repos/github/Kr00lIX/cast_params/badge.svg?branch=master)](https://coveralls.io/github/Kr00lIX/cast_params?branch=master)
+[![Build Status][shield-travis]][travis-ci]
+[![Coverage Status][shield-coveralls]][docs]
+[![Version][shield-version]][hexpm]
+[![License][shield-license]][hexpm]
+
 
 Easily define [Plug][plug]'s params types and cast incoming params to their types in a plug for `Phoenix.Controller` or `Plug.Router`.
 
-# Usage
 
-## Phoenix Framework
+## Features
+* Casting incoming params to defined types
+* Nulify params if not exists
+* Raise exception for required types (types ending with a `!`)
+* Supports namespace for params like. (`user: [name: :string]` prepare params from `user[name]`)
+
+## Usage
+
+### Phoenix Framework
 Put `use CastParams` inside Phoenix controller or add it into `web.ex`. It will extend controller module with `cast_params/1` macro which allows to define param's types. 
 
 ```elixir
@@ -44,9 +53,9 @@ Put `use CastParams` inside Phoenix controller or add it into `web.ex`. It will 
   end
 ```
 
-Documentation can be found at [https://hexdocs.pm/cast_params](https://hexdocs.pm/cast_params/).
+Documentation can be found at [https://hexdocs.pm/cast_params][docs].
 
-## Other Plug.Router Apps
+### Other Plug.Router Apps
 For other applications using `Plug.Router`, call the `cast_params` anytime after calling the `:match` and `:dispatch` plugs:
 
 ```elixir
@@ -62,6 +71,16 @@ defmodule MyApp.Router do
   get("/", do: send_resp(conn, 200, "ok"))
 end
 ```
+
+## Supported Types
+Each type can ending with a `!` to mark the parameter as required.
+
+* *`:boolean`*
+* *`:integer`* 
+* *`:string`* 
+* *`:float`* 
+* *`:decimal`*
+
 
 ## Installation
 
@@ -82,3 +101,20 @@ Feel free to send your PR with proposals, improvements or corrections 😉.
 
 ## License
 This software is licensed under [the MIT license](LICENSE.md).
+
+  [shield-version]:   https://img.shields.io/hexpm/v/cast_params.svg
+  [shield-license]:   https://img.shields.io/hexpm/l/cast_params.svg
+  [shield-downloads]: https://img.shields.io/hexpm/dt/cast_params.svg
+  [shield-travis]:    https://img.shields.io/travis/Kr00lIX/cast_params.svg
+  [shield-coveralls]:     https://img.shields.io/coveralls/github/Kr00lIX/cast_params.svg
+
+  [travis-ci]:        https://travis-ci.org/Kr00lIX/cast_params
+  [coveralls-ci]:     https://coveralls.io/github/Kr00lIX/cast_params?branch=master
+  [docs]:             https://hexdocs.pm/cast_params/
+
+  [license]:          https://opensource.org/licenses/MIT
+  [hexpm]:            https://hex.pm/packages/cast_params
+  [plug]:             https://github.com/elixir-lang/plug
+
+  [github-fork]:      https://github.com/Kr00lIX/cast_params/fork
+  

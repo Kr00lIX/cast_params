@@ -1,4 +1,5 @@
 # TODO
+* Rename NotFound to RequiredParam exception
 * Add interface for defining custom types
 * Add full format for defining additional params 
   ```
@@ -22,3 +23,4 @@ end
 ```
 * Add simple validation
 * Add custom validators
+

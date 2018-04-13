@@ -1,4 +1,7 @@
 defmodule CastParams.Plug do
+  @moduledoc """
+  Define `Plug` for casting params to types described in `CastParams.Schema`
+  """
   @behaviour Plug
   alias CastParams.{Type, NotFound, Error, Config}
 

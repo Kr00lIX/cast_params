@@ -1,9 +1,9 @@
 defmodule CastParams.Config do
   @moduledoc """
   Configure schema definition 
-  
+
   ## Options
-  *`nulify*` - Set default param to nil. `true` - by default.
+  * *`nulify`* - Set default param to nil. `true` - by default.
   """
   alias CastParams.Config
 

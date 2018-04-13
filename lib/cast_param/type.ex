@@ -4,7 +4,6 @@ defmodule CastParams.Type do
   """
 
   @primitive_types [:boolean, :integer, :string, :float, :decimal]
-  # @composite ~w(array map in embed)a
 
   @typedoc "A type, primitive or custom."
   @type t :: primitive | custom

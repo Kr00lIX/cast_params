@@ -15,8 +15,8 @@ defmodule CastParams do
     cast_params category_id: :integer!, weight: :float
 
     # defining for show action
-    # *:name* - is required string param
-    # *:terms* - is boolean param
+    # :name - is required string param
+    # :terms - is boolean param
     cast_params name: :string!, terms: :boolean when action == :show
       
     # received prepared params
@@ -30,12 +30,27 @@ defmodule CastParams do
   ```
 
   ## Supported Types
-    #{CastParams.Type.primitive_types() |> Enum.map(&inspect/1) |> Enum.join(", ")}
+  Each type can ending with a `!` to mark the parameter as required.
+
+  * *`:boolean`*
+  * *`:integer`* 
+  * *`:string`* 
+  * *`:float`* 
+  * *`:decimal`*
 
   """
 
-  alias CastParams.{Schema, Plug, Config}
+  alias CastParams.{Schema, Plug, Config, Param}
 
+  @typedoc """
+  Options for use CastParams
+  
+  """
+  @type options :: [
+    nulify: boolean()
+  ]
+
+  @spec __using__(options) :: no_return()
   defmacro __using__(opts \\ []) do
     quote do
       @config Config.init(unquote(opts))
@@ -46,7 +61,8 @@ defmodule CastParams do
   @doc """
   Stores a plug to be executed as part of the plug pipeline.
   """
-  defmacro cast_params(args)
+  @spec cast_params(Schema.t) :: [Param.t]
+  defmacro cast_params(schema)
 
   defmacro cast_params({:when, _, [options, guards]}) do
     cast_params(options, guards)
