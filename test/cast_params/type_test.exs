@@ -1,6 +1,6 @@
 defmodule CastParams.TypeTest do
   use ExUnit.Case, async: true
-
+  use ExUnitProperties
   alias CastParams.Type
 
   doctest CastParams.Type, import: true
@@ -15,7 +15,9 @@ defmodule CastParams.TypeTest do
 
   describe "(primitive type)" do
     test "expect cast :integer value" do
-      assert {:ok, 1} == Type.cast(:integer, 1)
+      check all num <- integer() do
+        assert {:ok, num} == Type.cast(:integer, num)
+      end
       assert {:ok, 1234} == Type.cast(:integer, "1234")
       assert {:error, _} = Type.cast(:integer, nil)
     end
@@ -24,6 +26,9 @@ defmodule CastParams.TypeTest do
       assert {:ok, "example"} == Type.cast(:string, "example")
       assert {:ok, "1"} == Type.cast(:string, 1)
       assert {:ok, "true"} == Type.cast(:string, true)
+      check all value <- binary() do
+        assert {:ok, value} == Type.cast(:string, value)
+      end
     end
 
     test "expect cast :boolean value" do
@@ -38,7 +43,10 @@ defmodule CastParams.TypeTest do
     end
 
     test "expect cast :float value" do
-      assert {:ok, 1.0} == Type.cast(:float, 1.0)
+      check all value <- float() do
+        assert {:ok, value} == Type.cast(:float, value)
+      end
+      
       assert {:ok, 0.01} == Type.cast(:float, "0.01")
       assert {:ok, 1.0} == Type.cast(:float, "1.0")
       assert {:ok, 1.0} == Type.cast(:float, "1")

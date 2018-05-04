@@ -1,6 +1,6 @@
 # TODO
 * Rename NotFound to RequiredParam exception
-* Add interface for defining custom types
+* Add interface for defining custom types 
 * Add full format for defining additional params 
   ```
   cast_params [category_id: %{type: :integer, required: true, default: true}]
@@ -23,4 +23,4 @@ end
 ```
 * Add simple validation
 * Add custom validators
-
+* Me in id place

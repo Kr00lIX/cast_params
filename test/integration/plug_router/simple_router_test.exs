@@ -1,5 +1,6 @@
 defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
   use ExUnit.Case, async: true
+  use ExUnitProperties
   use RouterHelper
   
   describe "parse no required params" do
@@ -13,15 +14,20 @@ defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
       get("/", do: send_resp(conn, 200, "ok"))
     end
 
-    test "expect prepare valid existing params to type" do
-      assert %{"category_id" => 12345, "skipped" => "234"} =
-               call_params(ExampleSimpleRouter, %{"category_id" => "12345", "skipped" => "234"})
+    property "expect prepare valid existing params to type" do
+      check all category_id <- integer(),
+                terms <- boolean(),
+                skipped <- one_of([StreamData.integer(), StreamData.binary()]) do
+                  
+        assert %{"category_id" => ^category_id, "skipped" => ^skipped} =
+                call_params(ExampleSimpleRouter, %{"category_id" => "#{category_id}", "skipped" => skipped})
+                     
+        assert %{"terms" => ^terms, "skipped" => ^skipped} =
+                call_params(ExampleSimpleRouter, %{"terms" => "#{terms}", "skipped" => skipped})
 
-      assert %{"terms" => true, "skipped" => "234"} =
-               call_params(ExampleSimpleRouter, %{"terms" => "true", "skipped" => "234"})
-
-      assert %{"terms" => false, "category_id" => 1} =
-               call_params(ExampleSimpleRouter, %{"terms" => "false", "category_id" => 1})
+        assert %{"terms" => ^terms, "category_id" => ^category_id} =
+                call_params(ExampleSimpleRouter, %{"terms" => "#{terms}", "category_id" => category_id})                 
+      end
     end
 
     test "receive error if can't prepare param" do
