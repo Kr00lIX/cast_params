@@ -14,7 +14,7 @@ defmodule CastParams.TypeTest do
   end
 
   describe "(primitive type)" do
-    test "expect cast :integer value" do
+    property "expect cast :integer value" do
       check all num <- integer() do
         assert {:ok, num} == Type.cast(:integer, num)
       end
@@ -22,7 +22,7 @@ defmodule CastParams.TypeTest do
       assert {:error, _} = Type.cast(:integer, nil)
     end
 
-    test "expect cast :string value" do
+    property "expect cast :string value" do
       assert {:ok, "example"} == Type.cast(:string, "example")
       assert {:ok, "1"} == Type.cast(:string, 1)
       assert {:ok, "true"} == Type.cast(:string, true)
@@ -42,7 +42,7 @@ defmodule CastParams.TypeTest do
       assert {:error, :invalid_type} == Type.cast(:boolean, "whatever")
     end
 
-    test "expect cast :float value" do
+    property "expect cast :float value" do
       check all value <- float() do
         assert {:ok, value} == Type.cast(:float, value)
       end

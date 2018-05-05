@@ -24,3 +24,7 @@ end
 * Add simple validation
 * Add custom validators
 * Me in id place
+* Add date type type: :date, format: "YYYY-MM-DD"
+* Add utc_datetime type
+* Add naive_datetime type
+* Add time type
