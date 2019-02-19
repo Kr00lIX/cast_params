@@ -1,8 +1,9 @@
 # TODO
 * Rename NotFound to RequiredParam exception
+* cast_params `categories: %{integer: :string}`
 * Add interface for defining custom types 
 * Add full format for defining additional params 
-  ```
+  ```elixir
   cast_params [category_id: %{type: :integer, required: true, default: true}]
   ```
 * Add default value option

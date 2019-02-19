@@ -7,7 +7,7 @@ defmodule CastParams.MixProject do
     [
       app: :cast_params,
       version: @version,
-      elixir: ">= 1.4.0",
+      elixir: ">= 1.5.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
