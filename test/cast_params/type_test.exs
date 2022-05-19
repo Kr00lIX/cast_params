@@ -57,7 +57,7 @@ defmodule CastParams.TypeTest do
     end
 
     test "expect cast :decimal value" do
-      assert {:ok, Decimal.from_float(1.0)} == Type.cast(:decimal, "1.0")
+      assert {:ok, Decimal.new("1.0")} == Type.cast(:decimal, "1.0")
       assert {:ok, Decimal.from_float(0.01)} == Type.cast(:decimal, "0.01")
       assert {:ok, Decimal.from_float(1.0)} == Type.cast(:decimal, Decimal.from_float(1.0))
       assert {:ok, Decimal.from_float(0.01)} == Type.cast(:decimal, Decimal.from_float(0.01))

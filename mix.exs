@@ -31,11 +31,11 @@ defmodule CastParams.MixProject do
   defp deps do
     [
       {:plug, "~> 1.0"},
-      {:decimal, "~> 1.2"},
+      {:decimal, "~> 2.0"},
       {:excoveralls, "~> 0.8", only: :test},
       {:stream_data, "~> 0.1", only: :test},
       {:phoenix, "~> 1.3", only: :test, runtime: false},
-      {:dialyxir, "~> 0.5", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:ex_doc, "~> 0.17", only: :dev, runtime: false}
     ]
   end

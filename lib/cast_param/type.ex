@@ -63,7 +63,7 @@ defmodule CastParams.Type do
       {:ok, 1.0}
 
       iex> cast(:decimal, "1.001")
-      {:ok, Decimal.from_float(1.001)}
+      {:ok, Decimal.new("1.001")}
   """
   @spec cast(t, term()) :: {:ok, term()} | {:error, term()}
   def cast(type, value) when type in @primitive_types do
@@ -106,7 +106,7 @@ defmodule CastParams.Type do
   defp do_cast(:decimal, %Decimal{} = value), do: {:ok, value}
 
   defp do_cast(:decimal, term) when is_binary(term) do
-    Decimal.parse(term)
+    Decimal.cast(term)
   end
 
   defp do_cast(:decimal, term) when is_number(term) do
