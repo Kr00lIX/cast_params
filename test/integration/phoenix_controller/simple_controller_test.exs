@@ -20,13 +20,13 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
     end
 
     test "expect check guards for index action" do
-      assert %{"category_id" => 1, "terms" => true} = 
-          action_params(ExampleController, :index, %{"category_id" => "1", "terms" => "true"})      
+      assert %{"category_id" => 1, "terms" => true} =
+               action_params(ExampleController, :index, %{"category_id" => "1", "terms" => "true"})
     end
 
-    test "skip cast_params plug for show action" do      
-      assert %{"category_id" => "1", "terms" => "true"} = 
-          action_params(ExampleController, :show, %{"category_id" => "1", "terms" => "true"})
+    test "skip cast_params plug for show action" do
+      assert %{"category_id" => "1", "terms" => "true"} =
+               action_params(ExampleController, :show, %{"category_id" => "1", "terms" => "true"})
     end
 
     test "doesn't nulify param" do
@@ -42,7 +42,7 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
 
       cast_params(id: :integer!)
       cast_params([age: :integer] when action == :index)
-      cast_params name: :string!, amount: :float when action == :show
+      cast_params(name: :string!, amount: :float when action == :show)
 
       def index(conn, %{"id" => _id, "age" => _age} = _params) do
         send_resp(conn, 200, "OK")

@@ -26,7 +26,7 @@ defmodule CastParams.Type do
   @doc """
   Casts the given input to the custom type.
   """
-  @callback cast(value :: term) :: {:ok, casted_value() :: term} | {:error, reason :: term()}
+  @callback cast(value :: term) :: {:ok, casted_value :: term} | {:error, reason :: term()}
 
   def primitive_types(), do: @primitive_types
 
@@ -41,7 +41,7 @@ defmodule CastParams.Type do
       {:ok, 1}
       iex> cast(:integer, "")
       {:error, :invalid}
-      
+
       iex> cast(:string, "some string")
       {:ok, "some string"}
       iex> cast(:string, nil)
@@ -63,7 +63,7 @@ defmodule CastParams.Type do
       {:ok, 1.0}
 
       iex> cast(:decimal, "1.001")
-      {:ok, Decimal.new(1.001)}
+      {:ok, Decimal.from_float(1.001)}
   """
   @spec cast(t, term()) :: {:ok, term()} | {:error, term()}
   def cast(type, value) when type in @primitive_types do
@@ -110,7 +110,7 @@ defmodule CastParams.Type do
   end
 
   defp do_cast(:decimal, term) when is_number(term) do
-    {:ok, Decimal.new(term)}
+    {:ok, Decimal.from_float(term)}
   end
 
   defp do_cast(_type, _value), do: {:error, :invalid_type}

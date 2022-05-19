@@ -56,17 +56,17 @@ defmodule CastParams.SchemaTest do
   describe "(simple definition with namespace)" do
     test "expect parse namespace param" do
       assert [
-        %Param{names: ["user", "age"], type: :integer},
-        %Param{names: ["user", "name"], type: :string},
-        %Param{names: ["category_id"], type: :integer, required: true}
-      ] == Schema.init(user: [age: :integer, name: :string], category_id: :integer!)
+               %Param{names: ["user", "age"], type: :integer},
+               %Param{names: ["user", "name"], type: :string},
+               %Param{names: ["category_id"], type: :integer, required: true}
+             ] == Schema.init(user: [age: :integer, name: :string], category_id: :integer!)
 
       assert [
-        %Param{names: ["user", "country", "id"], type: :integer},
-        %Param{names: ["user", "country", "name"], type: :string},
-        %Param{names: ["user", "name"], type: :string},
-        %Param{names: ["category_id"], type: :integer, required: true}
-      ] == Schema.init(user: [country: [id: :integer, name: :string], name: :string], category_id: :integer!)
+               %Param{names: ["user", "country", "id"], type: :integer},
+               %Param{names: ["user", "country", "name"], type: :string},
+               %Param{names: ["user", "name"], type: :string},
+               %Param{names: ["category_id"], type: :integer, required: true}
+             ] == Schema.init(user: [country: [id: :integer, name: :string], name: :string], category_id: :integer!)
     end
   end
 end

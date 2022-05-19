@@ -15,8 +15,8 @@ defmodule CastParams.Plug do
     Map.put(conn, :params, prepared_params)
   end
 
-  @spec prepare_param(CastParams.Param.t(), map(), Config.t) :: map() | no_return()
-  defp prepare_param(%{names: names}=param, params, config) do
+  @spec prepare_param(CastParams.Param.t(), map(), Config.t()) :: map() | no_return()
+  defp prepare_param(%{names: names} = param, params, config) do
     raw_value = get_param(params, names)
 
     cond do
@@ -43,7 +43,7 @@ defmodule CastParams.Plug do
   end
 
   defp get_param(params, keys) do
-    get_in params, keys
+    get_in(params, keys)
   end
 
   defp update_param(params, keys, value) do

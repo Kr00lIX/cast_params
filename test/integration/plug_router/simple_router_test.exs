@@ -2,7 +2,7 @@ defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
   use ExUnit.Case, async: true
   use ExUnitProperties
   use RouterHelper
-  
+
   describe "parse no required params" do
     defmodule ExampleSimpleRouter do
       use Plug.Router
@@ -15,18 +15,19 @@ defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
     end
 
     property "expect prepare valid existing params to type" do
-      check all category_id <- integer(),
-                terms <- boolean(),
-                skipped <- one_of([StreamData.integer(), StreamData.binary()]) do
-                  
+      check all(
+              category_id <- integer(),
+              terms <- boolean(),
+              skipped <- StreamData.binary()
+            ) do
         assert %{"category_id" => ^category_id, "skipped" => ^skipped} =
-                call_params(ExampleSimpleRouter, %{"category_id" => "#{category_id}", "skipped" => skipped})
-                     
+                 call_params(ExampleSimpleRouter, %{"category_id" => "#{category_id}", "skipped" => skipped})
+
         assert %{"terms" => ^terms, "skipped" => ^skipped} =
-                call_params(ExampleSimpleRouter, %{"terms" => "#{terms}", "skipped" => skipped})
+                 call_params(ExampleSimpleRouter, %{"terms" => "#{terms}", "skipped" => skipped})
 
         assert %{"terms" => ^terms, "category_id" => ^category_id} =
-                call_params(ExampleSimpleRouter, %{"terms" => "#{terms}", "category_id" => category_id})                 
+                 call_params(ExampleSimpleRouter, %{"terms" => "#{terms}", "category_id" => category_id})
       end
     end
 
@@ -65,11 +66,11 @@ defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
 
       assert_raise CastParams.NotFound, fn ->
         call_params(ExampleRequiredRouter, %{"category_id" => "12345", "skipped" => "234"})
-      end               
+      end
 
       assert_raise CastParams.NotFound, fn ->
         call_params(ExampleRequiredRouter, %{"terms" => "true"})
-      end               
+      end
     end
   end
 end

@@ -8,14 +8,14 @@ defmodule CastParams.Config do
   alias CastParams.Config
 
   @type t :: %Config{
-    nulify: boolean
-  }
+          nulify: boolean
+        }
 
   defstruct [:nulify]
 
   @doc """
   Configure Schema
-  
+
   ## Examples
       iex> init(nulify: false)
       %CastParams.Config{nulify: false}

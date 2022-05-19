@@ -15,9 +15,10 @@ defmodule CastParams.TypeTest do
 
   describe "(primitive type)" do
     property "expect cast :integer value" do
-      check all num <- integer() do
+      check all(num <- integer()) do
         assert {:ok, num} == Type.cast(:integer, num)
       end
+
       assert {:ok, 1234} == Type.cast(:integer, "1234")
       assert {:error, _} = Type.cast(:integer, nil)
     end
@@ -26,7 +27,8 @@ defmodule CastParams.TypeTest do
       assert {:ok, "example"} == Type.cast(:string, "example")
       assert {:ok, "1"} == Type.cast(:string, 1)
       assert {:ok, "true"} == Type.cast(:string, true)
-      check all value <- binary() do
+
+      check all(value <- binary()) do
         assert {:ok, value} == Type.cast(:string, value)
       end
     end
@@ -43,10 +45,10 @@ defmodule CastParams.TypeTest do
     end
 
     property "expect cast :float value" do
-      check all value <- float() do
+      check all(value <- float()) do
         assert {:ok, value} == Type.cast(:float, value)
       end
-      
+
       assert {:ok, 0.01} == Type.cast(:float, "0.01")
       assert {:ok, 1.0} == Type.cast(:float, "1.0")
       assert {:ok, 1.0} == Type.cast(:float, "1")
@@ -55,10 +57,10 @@ defmodule CastParams.TypeTest do
     end
 
     test "expect cast :decimal value" do
-      assert {:ok, Decimal.new(1.0)} == Type.cast(:decimal, "1.0")
-      assert {:ok, Decimal.new(0.01)} == Type.cast(:decimal, "0.01")
-      assert {:ok, Decimal.new(1.0)} == Type.cast(:decimal, Decimal.new(1.0))
-      assert {:ok, Decimal.new(0.01)} == Type.cast(:decimal, Decimal.new(0.01))
+      assert {:ok, Decimal.from_float(1.0)} == Type.cast(:decimal, "1.0")
+      assert {:ok, Decimal.from_float(0.01)} == Type.cast(:decimal, "0.01")
+      assert {:ok, Decimal.from_float(1.0)} == Type.cast(:decimal, Decimal.from_float(1.0))
+      assert {:ok, Decimal.from_float(0.01)} == Type.cast(:decimal, Decimal.from_float(0.01))
       assert {:error, _reason} = Type.cast(:decimal, nil)
     end
 

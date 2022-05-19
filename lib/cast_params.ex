@@ -18,13 +18,13 @@ defmodule CastParams do
     # :name - is required string param
     # :terms - is boolean param
     cast_params name: :string!, terms: :boolean when action == :show
-      
+
     # received prepared params
     def index(conn, %{"category_id" => category_id, "weight" => weight} = params) do
     end
 
     # received prepared params
-    def show(conn, %{"category_id" => category_id, "terms" => terms, "weight" => weight} = params) do      
+    def show(conn, %{"category_id" => category_id, "terms" => terms, "weight" => weight} = params) do
     end
   end
   ```
@@ -33,22 +33,22 @@ defmodule CastParams do
   Each type can ending with a `!` to mark the parameter as required.
 
   * *`:boolean`*
-  * *`:integer`* 
-  * *`:string`* 
-  * *`:float`* 
+  * *`:integer`*
+  * *`:string`*
+  * *`:float`*
   * *`:decimal`*
 
   """
 
-  alias CastParams.{Schema, Plug, Config, Param}
+  alias CastParams.{Schema, Plug, Config}
 
   @typedoc """
   Options for use CastParams
 
   """
   @type options :: [
-    nulify: boolean()
-  ]
+          nulify: boolean()
+        ]
 
   @spec __using__(options) :: no_return()
   defmacro __using__(opts \\ []) do
@@ -61,7 +61,7 @@ defmodule CastParams do
   @doc """
   Stores a plug to be executed as part of the plug pipeline.
   """
-  @spec cast_params(Schema.t) :: Macro.t
+  @spec cast_params(Schema.t()) :: Macro.t()
   defmacro cast_params(schema)
 
   defmacro cast_params({:when, _, [options, guards]}) do
