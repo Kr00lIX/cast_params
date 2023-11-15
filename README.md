@@ -108,7 +108,7 @@ Each type can ending with a `!` to mark the parameter as required.
 ```elixir
 def deps do
   [
-    {:cast_params, "~> 0.0.4"} 
+    {:cast_params, "~> 0.0.5"} 
   ]
 end
 ```
