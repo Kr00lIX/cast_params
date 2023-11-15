@@ -1,59 +1,79 @@
-[CastParams][docs]
+# CastParams
 -----
 [![Build Status][shield-travis]][travis-ci]
 [![Coverage Status][shield-coveralls]][docs]
 [![Version][shield-version]][hexpm]
 [![License][shield-license]][hexpm]
 
-
-Easily define [Plug][plug]'s params types and cast incoming params to their types in a plug for `Phoenix.Controller` or `Plug.Router`.
+CastParams is a powerful library for Elixir's [Plug][plug] that allows you to define parameter types and automatically cast incoming parameters to their respective types in a plug for `Phoenix.Controller` or `Plug.Router`. This simplifies the process of handling incoming parameters and reduces the amount of manual type checking and casting you need to do in your code.
 
 
 ## Features
-* Casting incoming params to defined types
-* Nulify params if not exists
-* Raise exception for required types (types ending with a `!`)
-* Supports namespace for params like. (`user: [name: :string]` prepare params from `user[name]`)
+* **Type Casting**: Automatically cast incoming parameters to their defined types. This eliminates the need for manual type checking and casting in your code.
+* **Nullify Parameters**: If a parameter does not exist, it will be set to null. This prevents errors caused by undefined parameters.
+* **Required Types**: You can mark a type as required by ending it with a `!`. If a required parameter does not exist, an exception will be raised.
+* **Namespace Support**: CastParams supports namespaced parameters like `user[name]`.
 
 ## Usage
 
 ### Phoenix Framework
-Put `use CastParams` inside Phoenix controller or add it into `web.ex`. It will extend controller module with `cast_params/1` macro which allows to define param's types. 
 
+1. Add `use CastParams` inside your Phoenix controller or in `web.ex`. This will extend the controller module with the `cast_params/1` macro which allows you to define parameter types.
+2. Use the `cast_params` macro to define the types for your parameters. You can define types for all actions or for specific actions.
+3. In your action functions, you can now access the casted parameters directly from the params map.
+
+Here is an example:
 ```elixir
-  defmodule AccountController do
-    use AppWeb, :controller
-    use CastParams
-    
-    # Defining params types for all actions
-    # :category_id - required integer param (raise CastParams.NotFound if not exists)
-    # :weight - float param, set nil if doesn't exists
-    cast_params category_id: :integer!, weight: :float
+defmodule AccountController do
 
-    # Defining for show action
-    # :name - is required string param
-    # :terms - is boolean param
-    cast_params name: :string!, terms: :boolean when action == :show
-      
-    # Defining for create action
-    # user[name] - string value
-    # user[subscribe] - boolean value
-    cast_params user: [name: :string, subscribe: :boolean] when action == :create
+  use AppWeb, :controller
+  use CastParams
+  
+  # Define parameter types for all actions
+  # :category_id is a required integer parameter (CastParams.NotFound will be raised if it does not exist)
+  # :weight is a float parameter (will be set to nil if it does not exist)
+  cast_params category_id: :integer!, weight: :float
 
-    # received prepared params
-    def index(conn, %{"category_id" => category_id, "weight" => weight} = params) do
-    end
+  # Define parameter types for the show action
+  # :name is a required string parameter
+  # :terms is a boolean parameter  
+  cast_params name: :string!, terms: :boolean when action == :show
 
-    # received prepared params
-    def show(conn, %{"category_id" => category_id, "terms" => terms, "weight" => weight}) do      
-    end
+  # Define parameter types for the create action
+  # user[name] is a string parameter
+  # user[subscribe] is a boolean parameter
+  cast_params user: [name: :string, subscribe: :boolean] when action == :create
 
-    def create(conn, %{"user" => %{"name" => name, "subscribe" => subscribe}) do
+  # The index action receives the prepared parameters
+  def index(conn, %{"category_id" => category_id, "weight" => weight} = params) do
+    # Here you can use the casted parameters directly
+    # For example, you might use the category_id to fetch a category from the database
+    category = Repo.get(Category, category_id)
+    # Then you might use the weight to filter products in that category
+    products = Repo.all(from p in Product, where: p.category_id == ^category_id and p.weight <= ^weight)
+    # Then render the index view with the products
+    render(conn, "index.html", products: products)
+  end
+
+  # The show action also receives the prepared parameters
+  def show(conn, %{"category_id" => category_id, "terms" => terms, "weight" => weight}) do      
+    # Here you might use the category_id and terms to fetch a specific product
+    product = Repo.get_by(Product, category_id: category_id, terms: terms)
+    # Then render the show view with the product
+    render(conn, "show.html", product: product)
+  end
+
+  # The create action receives the prepared parameters
+  def create(conn, %{"user" => %{"name" => name, "subscribe" => subscribe}) do
+        # Here you might use the name and subscribe parameters to create a new user
+    user = User.changeset(%User{}, %{name: name, subscribe: subscribe})
+    case Repo.insert(user) do
+      {:ok, user} -> redirect(conn, to: user_path(conn, :show, user))
+      {:error, changeset} -> render(conn, "new.html", changeset: changeset)
     end
   end
+end
 ```
-
-Documentation can be found at [https://hexdocs.pm/cast_params][docs].
 
 ### Other Plug.Router Apps
 For other applications using `Plug.Router`, call the `cast_params` anytime after calling the `:match` and `:dispatch` plugs:
@@ -83,38 +103,22 @@ Each type can ending with a `!` to mark the parameter as required.
 
 
 ## Installation
-
-[Available in Hex](https://hex.pm/packages/cast_params), the package can be installed as:
-
-Add `cast_params` to your list of dependencies in mix.exs:
+[Available in Hex](https://hex.pm/packages/cast_params), the package can be installed by adding `cast_params`to your list of dependencies in mix.exs:
 
 ```elixir
 def deps do
   [
-    {:cast_params, ">= 0.0.3"} 
+    {:cast_params, "~> 0.0.4"} 
   ]
 end
 ```
 
+## Common Issues and Solutions
+If you encounter any issues while using CastParams, please check this section first. If your issue is not listed here, feel free to open an issue on the GitHub repository.
+
 ## Contribution
-Feel free to send your PR with proposals, improvements or corrections 😉.
+Contributions are always welcome! Feel free to send your PR with proposals, improvements, or corrections.
+
 
 ## License
 This software is licensed under [the MIT license](LICENSE.md).
-
-  [shield-version]:   https://img.shields.io/hexpm/v/cast_params.svg
-  [shield-license]:   https://img.shields.io/hexpm/l/cast_params.svg
-  [shield-downloads]: https://img.shields.io/hexpm/dt/cast_params.svg
-  [shield-travis]:    https://img.shields.io/travis/Kr00lIX/cast_params.svg
-  [shield-coveralls]:     https://img.shields.io/coveralls/github/Kr00lIX/cast_params.svg
-
-  [travis-ci]:        https://travis-ci.org/Kr00lIX/cast_params
-  [coveralls-ci]:     https://coveralls.io/github/Kr00lIX/cast_params?branch=master
-  [docs]:             https://hexdocs.pm/cast_params/
-
-  [license]:          https://opensource.org/licenses/MIT
-  [hexpm]:            https://hex.pm/packages/cast_params
-  [plug]:             https://github.com/elixir-lang/plug
-
-  [github-fork]:      https://github.com/Kr00lIX/cast_params/fork
-  
