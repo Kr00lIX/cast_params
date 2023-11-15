@@ -31,7 +31,6 @@ defmodule CastParams.Plug do
         end
 
       param.required ->
-        # todo: change to error
         raise %NotFound{message: "Error #{names} required", field: param.names}
 
       config.nulify ->

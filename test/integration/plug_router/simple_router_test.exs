@@ -43,7 +43,7 @@ defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
     end
 
     test "expect nulify params if not exists" do
-      assert %{"category_id" => 12345, "name" => nil} = call_params(ExampleSimpleRouter, %{"category_id" => "12345"})
+      assert %{"category_id" => 12_345, "name" => nil} = call_params(ExampleSimpleRouter, %{"category_id" => "12345"})
 
       assert %{"terms" => nil, "skipped" => "234", "category_id" => nil, "name" => "Taras"} =
                call_params(ExampleSimpleRouter, %{"skipped" => "234", "name" => "Taras"})
@@ -61,7 +61,7 @@ defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
     end
 
     test "expect prepare valid existing params to type" do
-      assert %{"category_id" => 12345, "terms" => true, "skipped" => "234"} =
+      assert %{"category_id" => 12_345, "terms" => true, "skipped" => "234"} =
                call_params(ExampleRequiredRouter, %{"category_id" => "12345", "terms" => "true", "skipped" => "234"})
 
       assert_raise CastParams.NotFound, fn ->

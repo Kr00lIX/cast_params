@@ -11,9 +11,9 @@ defmodule CastParams.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [coveralls: :test, "coveralls.travis": :test],
       description: "CastParams creates plug for casting params to defined types.",
       package: package(),
+      aliases: aliases(),
       name: "CastParams",
       docs: docs(),
       elixirc_paths: elixirc_paths(Mix.env())
@@ -36,7 +36,9 @@ defmodule CastParams.MixProject do
       {:stream_data, "~> 0.1", only: :test},
       {:phoenix, "~> 1.3", only: :test, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:ex_doc, "~> 0.17", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.17", only: :dev, runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -64,4 +66,26 @@ defmodule CastParams.MixProject do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  # Aliases are shortcuts or tasks specific to the current project.
+  defp aliases do
+    [
+      validate: [
+        "compile --warnings-as-errors",
+        "credo",
+        "format --check-formatted",
+        "test",
+        "deps.audit",
+        "dialyzer"
+      ]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        validate: :test
+      ]
+    ]
+  end
 end
