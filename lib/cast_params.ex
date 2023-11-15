@@ -40,7 +40,7 @@ defmodule CastParams do
 
   """
 
-  alias CastParams.{Schema, Plug, Config}
+  alias CastParams.{Config, Plug, Schema}
 
   @typedoc """
   Options for use CastParams

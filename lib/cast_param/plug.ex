@@ -3,7 +3,7 @@ defmodule CastParams.Plug do
   Define `Plug` for casting params to types described in `CastParams.Schema`
   """
   @behaviour Plug
-  alias CastParams.{Type, NotFound, Error, Config}
+  alias CastParams.{Config, Error, NotFound, Type}
 
   def init({schema, config}) do
     {schema, config}

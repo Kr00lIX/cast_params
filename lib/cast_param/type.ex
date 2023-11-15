@@ -28,7 +28,7 @@ defmodule CastParams.Type do
   """
   @callback cast(value :: term) :: {:ok, casted_value :: term} | {:error, reason :: term()}
 
-  def primitive_types(), do: @primitive_types
+  def primitive_types, do: @primitive_types
 
   @doc """
   Casts the given input to the custom type.

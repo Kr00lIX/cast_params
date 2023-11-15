@@ -2,7 +2,7 @@ defmodule CastParams.Schema do
   @moduledoc """
   Defines a params schema for a plug.
 
-  A params schema is just a keyword list where keys are the parameter name 
+  A params schema is just a keyword list where keys are the parameter name
   and the value is either a valid `CastParams.Type` (ending with a `!` to mark the parameter as required).
 
   ## Example
@@ -11,7 +11,7 @@ defmodule CastParams.Schema do
 
   """
 
-  alias CastParams.{Param, Error, Type}
+  alias CastParams.{Error, Param, Type}
 
   @primitive_types Type.primitive_types()
   @required_to_type Enum.reduce(@primitive_types, %{}, &Map.put(&2, :"#{&1}!", &1))

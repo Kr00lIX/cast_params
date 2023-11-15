@@ -3,7 +3,7 @@ defmodule CastParams.SchemaTest do
   doctest CastParams.Schema, import: true
   import CastParams.Schema
 
-  alias CastParams.{Schema, Param, Error}
+  alias CastParams.{Error, Param, Schema}
 
   describe "(simple definition)" do
     test "expect parse :integer param" do

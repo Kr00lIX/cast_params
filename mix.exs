@@ -32,13 +32,17 @@ defmodule CastParams.MixProject do
     [
       {:plug, "~> 1.0"},
       {:decimal, "~> 2.0"},
+
+      # Test
       {:excoveralls, "~> 0.8", only: :test},
       {:stream_data, "~> 0.1", only: :test},
       {:phoenix, "~> 1.3", only: :test, runtime: false},
-      {:dialyxir, "~> 1.0", only: :dev, runtime: false},
+
+      # Dev
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.17", only: :dev, runtime: false},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false}
+      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -47,7 +51,7 @@ defmodule CastParams.MixProject do
     %{
       package: "cast_params",
       contributors: ["Kr00lIX"],
-      maintainers: ["Anatoliy Kovalchuk"],
+      maintainers: ["Anatolii Kovalchuk"],
       links: %{github: "https://github.com/Kr00lIX/cast_params"},
       licenses: ["LICENSE.md"],
       files: ~w(lib LICENSE.md mix.exs README.md)
