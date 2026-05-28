@@ -1,13 +1,13 @@
 defmodule CastParams.MixProject do
   use Mix.Project
 
-  @version "0.0.5"
+  @version "0.0.6"
 
   def project do
     [
       app: :cast_params,
       version: @version,
-      elixir: ">= 1.5.0",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
@@ -30,18 +30,18 @@ defmodule CastParams.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:plug, "~> 1.0"},
-      {:decimal, "~> 2.0"},
+      {:plug, "~> 1.14"},
+      {:decimal, "~> 2.0 or ~> 3.0"},
 
       # Test
-      {:excoveralls, "~> 0.8", only: :test},
-      {:stream_data, "~> 0.1", only: :test},
-      {:phoenix, "~> 1.3", only: :test, runtime: false},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:stream_data, "~> 1.0", only: :test},
+      {:phoenix, "~> 1.7", only: :test, runtime: false},
 
       # Dev
-      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.17", only: :dev, runtime: false},
-      {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
@@ -49,12 +49,10 @@ defmodule CastParams.MixProject do
   # Settings for publishing in Hex package manager:
   defp package do
     %{
-      package: "cast_params",
-      contributors: ["Kr00lIX"],
       maintainers: ["Anatolii Kovalchuk"],
-      links: %{github: "https://github.com/Kr00lIX/cast_params"},
-      licenses: ["LICENSE.md"],
-      files: ~w(lib LICENSE.md mix.exs README.md)
+      links: %{"GitHub" => "https://github.com/Kr00lIX/cast_params"},
+      licenses: ["MIT"],
+      files: ~w(lib LICENSE.md mix.exs README.md CHANGELOG.md)
     }
   end
 

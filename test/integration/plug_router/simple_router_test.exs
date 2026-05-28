@@ -50,6 +50,25 @@ defmodule CastParams.Integration.PlugRouter.SimpleRouterTest do
     end
   end
 
+  describe "parse params with defaults" do
+    defmodule ExampleDefaultRouter do
+      use Plug.Router
+      use CastParams
+
+      cast_params(per_page: %{type: :integer, default: 25}, page: %{type: :integer, default: 1})
+
+      get("/", do: send_resp(conn, 200, "ok"))
+    end
+
+    test "uses defaults when param is missing" do
+      assert %{"page" => 1, "per_page" => 25} = call_params(ExampleDefaultRouter, %{})
+    end
+
+    test "keeps provided value over default" do
+      assert %{"page" => 5, "per_page" => 25} = call_params(ExampleDefaultRouter, %{"page" => "5"})
+    end
+  end
+
   describe "parse required params" do
     defmodule ExampleRequiredRouter do
       use Plug.Router

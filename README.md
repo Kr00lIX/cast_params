@@ -1,9 +1,9 @@
 # CastParams
------
-[![Build Status][shield-travis]][travis-ci]
-[![Coverage Status][shield-coveralls]][docs]
-[![Version][shield-version]][hexpm]
-[![License][shield-license]][hexpm]
+
+[![CI](https://github.com/Kr00lIX/cast_params/actions/workflows/ci.yml/badge.svg)](https://github.com/Kr00lIX/cast_params/actions/workflows/ci.yml)
+[![Hex.pm](https://img.shields.io/hexpm/v/cast_params.svg)](https://hex.pm/packages/cast_params)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-blue.svg)](https://hexdocs.pm/cast_params)
+[![License](https://img.shields.io/hexpm/l/cast_params.svg)](https://github.com/Kr00lIX/cast_params/blob/master/LICENSE.md)
 
 CastParams is a powerful library for Elixir's [Plug][plug] that allows you to define parameter types and automatically cast incoming parameters to their respective types in a plug for `Phoenix.Controller` or `Plug.Router`. This simplifies the process of handling incoming parameters and reduces the amount of manual type checking and casting you need to do in your code.
 
@@ -64,8 +64,8 @@ defmodule AccountController do
   end
 
   # The create action receives the prepared parameters
-  def create(conn, %{"user" => %{"name" => name, "subscribe" => subscribe}) do
-        # Here you might use the name and subscribe parameters to create a new user
+  def create(conn, %{"user" => %{"name" => name, "subscribe" => subscribe}}) do
+    # Here you might use the name and subscribe parameters to create a new user
     user = User.changeset(%User{}, %{name: name, subscribe: subscribe})
     case Repo.insert(user) do
       {:ok, user} -> redirect(conn, to: user_path(conn, :show, user))
@@ -93,13 +93,41 @@ end
 ```
 
 ## Supported Types
-Each type can ending with a `!` to mark the parameter as required.
+Each type can end with a `!` to mark the parameter as required.
 
-* *`:boolean`*
-* *`:integer`* 
-* *`:string`* 
-* *`:float`* 
-* *`:decimal`*
+* `:boolean`
+* `:integer`
+* `:string`
+* `:float`
+* `:decimal`
+* `:date` — ISO 8601 (`"2024-01-15"`)
+* `:time` — ISO 8601 (`"12:34:56"`)
+* `:naive_datetime` — ISO 8601 (`"2024-01-15T12:34:56"`)
+* `:utc_datetime` — ISO 8601 with offset (`"2024-01-15T12:34:56Z"`)
+
+### Full parameter definition
+You can also use a map form to set extra options:
+
+```elixir
+cast_params category_id: %{type: :integer, required: true, default: 0}
+```
+
+Supported options: `type` (required), `required` (boolean, default `false`), `default` (used when the parameter is missing).
+
+### Custom types
+Define a module that implements the `CastParams.Type` behaviour:
+
+```elixir
+defmodule MyApp.Slug do
+  @behaviour CastParams.Type
+
+  def type, do: :string
+  def cast(value) when is_binary(value), do: {:ok, String.downcase(value)}
+  def cast(_), do: {:error, :invalid}
+end
+
+cast_params slug: MyApp.Slug
+```
 
 
 ## Installation
@@ -108,7 +136,7 @@ Each type can ending with a `!` to mark the parameter as required.
 ```elixir
 def deps do
   [
-    {:cast_params, "~> 0.0.5"} 
+    {:cast_params, "~> 0.0.6"}
   ]
 end
 ```

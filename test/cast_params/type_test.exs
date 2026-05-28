@@ -65,15 +65,52 @@ defmodule CastParams.TypeTest do
     end
 
     test "expect cast :date value" do
+      assert {:ok, ~D[2024-01-15]} == Type.cast(:date, "2024-01-15")
+      assert {:ok, ~D[2024-01-15]} == Type.cast(:date, ~D[2024-01-15])
+      assert {:error, _reason} = Type.cast(:date, "not a date")
+      assert {:error, _reason} = Type.cast(:date, nil)
     end
 
     test "expect cast :utc_datetime value" do
+      assert {:ok, ~U[2024-01-15 12:34:56Z]} == Type.cast(:utc_datetime, "2024-01-15T12:34:56Z")
+      assert {:ok, ~U[2024-01-15 12:34:56Z]} == Type.cast(:utc_datetime, ~U[2024-01-15 12:34:56Z])
+      assert {:error, _reason} = Type.cast(:utc_datetime, "no offset")
+      assert {:error, _reason} = Type.cast(:utc_datetime, nil)
     end
 
     test "expect cast :naive_datetime value" do
+      assert {:ok, ~N[2024-01-15 12:34:56]} == Type.cast(:naive_datetime, "2024-01-15T12:34:56")
+      assert {:ok, ~N[2024-01-15 12:34:56]} == Type.cast(:naive_datetime, ~N[2024-01-15 12:34:56])
+      assert {:error, _reason} = Type.cast(:naive_datetime, "garbage")
+      assert {:error, _reason} = Type.cast(:naive_datetime, nil)
     end
 
     test "expect cast :time value" do
+      assert {:ok, ~T[12:34:56]} == Type.cast(:time, "12:34:56")
+      assert {:ok, ~T[12:34:56]} == Type.cast(:time, ~T[12:34:56])
+      assert {:error, _reason} = Type.cast(:time, "25:00:00")
+      assert {:error, _reason} = Type.cast(:time, nil)
+    end
+  end
+
+  describe "(custom module type)" do
+    defmodule UpcaseString do
+      @behaviour CastParams.Type
+      def type, do: :string
+      def cast(value) when is_binary(value), do: {:ok, String.upcase(value)}
+      def cast(_), do: {:error, :invalid}
+    end
+
+    test "casts via custom module" do
+      assert {:ok, "HELLO"} == Type.cast(UpcaseString, "hello")
+      assert {:error, :invalid} == Type.cast(UpcaseString, 123)
+    end
+
+    test "returns :invalid_type for module without cast/1" do
+      defmodule NoCast do
+      end
+
+      assert {:error, :invalid_type} == Type.cast(NoCast, "x")
     end
   end
 end

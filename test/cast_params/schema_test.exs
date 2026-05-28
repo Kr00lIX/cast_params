@@ -53,6 +53,22 @@ defmodule CastParams.SchemaTest do
     end
   end
 
+  describe "(full-format definition)" do
+    test "expect parse map options" do
+      assert [%Param{names: ["age"], type: :integer, required: true, default: 0}] ==
+               Schema.init(age: %{type: :integer, required: true, default: 0})
+
+      assert [%Param{names: ["age"], type: :integer, required: false, default: nil}] ==
+               Schema.init(age: %{type: :integer})
+    end
+
+    test "expect raise without :type key" do
+      assert_raise Error, fn ->
+        Schema.init(age: %{required: true})
+      end
+    end
+  end
+
   describe "(simple definition with namespace)" do
     test "expect parse namespace param" do
       assert [

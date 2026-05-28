@@ -3,7 +3,17 @@ defmodule CastParams.Type do
   Define casting types
   """
 
-  @primitive_types [:boolean, :integer, :string, :float, :decimal]
+  @primitive_types [
+    :boolean,
+    :integer,
+    :string,
+    :float,
+    :decimal,
+    :date,
+    :time,
+    :naive_datetime,
+    :utc_datetime
+  ]
 
   @typedoc "A type, primitive or custom."
   @type t :: primitive | custom
@@ -14,7 +24,8 @@ defmodule CastParams.Type do
   @typedoc "Custom types are represented by user-defined modules."
   @type custom :: atom
 
-  @typep base :: :integer | :float | :boolean | :string | :decimal
+  @typep base ::
+           :integer | :float | :boolean | :string | :decimal | :date | :time | :naive_datetime | :utc_datetime
 
   @typep composite :: {:array, t} | {:map, t}
 
@@ -64,10 +75,30 @@ defmodule CastParams.Type do
 
       iex> cast(:decimal, "1.001")
       {:ok, Decimal.new("1.001")}
+
+      iex> cast(:date, "2024-01-15")
+      {:ok, ~D[2024-01-15]}
+
+      iex> cast(:time, "12:34:56")
+      {:ok, ~T[12:34:56]}
+
+      iex> cast(:naive_datetime, "2024-01-15T12:34:56")
+      {:ok, ~N[2024-01-15 12:34:56]}
+
+      iex> cast(:utc_datetime, "2024-01-15T12:34:56Z")
+      {:ok, ~U[2024-01-15 12:34:56Z]}
   """
   @spec cast(t, term()) :: {:ok, term()} | {:error, term()}
   def cast(type, value) when type in @primitive_types do
     do_cast(type, value)
+  end
+
+  def cast(module, value) when is_atom(module) do
+    if function_exported?(module, :cast, 1) do
+      module.cast(value)
+    else
+      {:error, :invalid_type}
+    end
   end
 
   @spec do_cast(type :: atom(), value :: term()) :: {:ok, value :: term()} | {:error, reason :: term()}
@@ -111,6 +142,42 @@ defmodule CastParams.Type do
 
   defp do_cast(:decimal, term) when is_number(term) do
     {:ok, Decimal.from_float(term)}
+  end
+
+  defp do_cast(:date, %Date{} = value), do: {:ok, value}
+
+  defp do_cast(:date, value) when is_binary(value) do
+    case Date.from_iso8601(value) do
+      {:ok, date} -> {:ok, date}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp do_cast(:time, %Time{} = value), do: {:ok, value}
+
+  defp do_cast(:time, value) when is_binary(value) do
+    case Time.from_iso8601(value) do
+      {:ok, time} -> {:ok, time}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp do_cast(:naive_datetime, %NaiveDateTime{} = value), do: {:ok, value}
+
+  defp do_cast(:naive_datetime, value) when is_binary(value) do
+    case NaiveDateTime.from_iso8601(value) do
+      {:ok, naive} -> {:ok, naive}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp do_cast(:utc_datetime, %DateTime{} = value), do: {:ok, value}
+
+  defp do_cast(:utc_datetime, value) when is_binary(value) do
+    case DateTime.from_iso8601(value) do
+      {:ok, datetime, _offset} -> {:ok, datetime}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   defp do_cast(_type, _value), do: {:error, :invalid_type}

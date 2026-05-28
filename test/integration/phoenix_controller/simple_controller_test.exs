@@ -5,7 +5,7 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
 
   describe "use for one action with guard" do
     defmodule ExampleController do
-      use Phoenix.Controller
+      use Phoenix.Controller, formats: []
       use CastParams, nulify: false
 
       cast_params([category_id: :integer, terms: :boolean] when action == :index)
@@ -37,7 +37,7 @@ defmodule CastParams.Integration.Phoenix.SimpleContollerTest do
 
   describe "use for each action defined plug" do
     defmodule ThreeCastsController do
-      use Phoenix.Controller
+      use Phoenix.Controller, formats: []
       use CastParams, nulify: true
 
       cast_params(id: :integer!)

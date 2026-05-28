@@ -76,23 +76,15 @@ defmodule CastParams do
   defp cast_params(options, guards) do
     schema = Schema.init(options)
 
-    result =
-      if guards do
-        quote location: :keep do
-          plug(Plug, {unquote(Macro.escape(schema)), @config} when unquote(guards))
-        end
-      else
-        quote location: :keep do
-          plug(Plug, {unquote(Macro.escape(schema)), @config})
-        end
+    if guards do
+      quote location: :keep do
+        plug(Plug, {unquote(Macro.escape(schema)), @config} when unquote(guards))
       end
-
-    # result
-    # |> IO.inspect
-    # |> Macro.to_string
-    # |> IO.puts
-
-    result
+    else
+      quote location: :keep do
+        plug(Plug, {unquote(Macro.escape(schema)), @config})
+      end
+    end
   end
 
   # detect attached guard to the end of options list

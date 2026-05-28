@@ -4,8 +4,9 @@ defmodule CastParams.Param do
   @type t :: %__MODULE__{
           names: [String.t()],
           type: CastParams.Type.t(),
-          required: boolean()
+          required: boolean(),
+          default: term()
         }
 
-  defstruct names: [], type: nil, required: false
+  defstruct names: [], type: nil, required: false, default: nil
 end

@@ -35,18 +35,16 @@ defmodule CastParams.Schema do
         %CastParams.Param{names: ["name"], required: false, type: :string},
         %CastParams.Param{names: ["age"], required: false, type: :integer},
       ]
+
+      iex> init([category_id: %{type: :integer, required: true, default: 0}])
+      [%CastParams.Param{names: ["category_id"], type: :integer, required: true, default: 0}]
   """
   @spec init(options :: list()) :: [Param.t()]
   def init(options) when is_list(options) do
     options
     |> Enum.reduce([], &init_item(%Param{}, &1, &2))
-    |> Enum.reduce([], fn param, acc ->
-      updated_item =
-        param
-        |> Map.update!(:names, &Enum.reverse/1)
-
-      [updated_item | acc]
-    end)
+    |> Enum.map(&Map.update!(&1, :names, fn names -> Enum.reverse(names) end))
+    |> Enum.reverse()
   end
 
   defp init_item(param, {name, type}, acc) when is_atom(name) and is_atom(type) do
@@ -58,30 +56,55 @@ defmodule CastParams.Schema do
     [updated_param | acc]
   end
 
-  defp init_item(param, {name, options}, acc) when is_list(options) do
-    updated_param = parse_names(param, name)
+  defp init_item(param, {name, {:%{}, _meta, kw}}, acc) when is_atom(name) and is_list(kw) do
+    init_item(param, {name, Map.new(kw)}, acc)
+  end
 
-    options
-    |> Enum.reduce(acc, &init_item(updated_param, &1, &2))
+  defp init_item(param, {name, options}, acc) when is_atom(name) and is_map(options) do
+    updated_param =
+      param
+      |> parse_names(name)
+      |> parse_options(options)
+
+    [updated_param | acc]
+  end
+
+  defp init_item(param, {name, options}, acc) when is_atom(name) and is_list(options) do
+    updated_param = parse_names(param, name)
+    Enum.reduce(options, acc, &init_item(updated_param, &1, &2))
   end
 
   defp parse_names(%{names: names} = param, name) when is_atom(name) do
-    parsed_name = to_string(name)
-    %{param | names: [parsed_name | names]}
+    %{param | names: [to_string(name) | names]}
+  end
+
+  defp parse_options(param, %{type: type} = options) do
+    param
+    |> parse_type(type)
+    |> Map.put(:required, Map.get(options, :required, false))
+    |> Map.put(:default, Map.get(options, :default))
+  end
+
+  defp parse_options(param, options) do
+    raise Error, "missing `:type` key in options for #{inspect(param.names)}: #{inspect(options)}"
   end
 
   @spec parse_type(Param.t(), atom()) :: Param.t()
   defp parse_type(param, type) when type in @primitive_types do
-    Map.put(param, :type, type)
+    %{param | type: type}
   end
 
   defp parse_type(param, raw_type) when raw_type in @required_names do
-    param
-    |> Map.put(:type, @required_to_type[raw_type])
-    |> Map.put(:required, true)
+    %{param | type: @required_to_type[raw_type], required: true}
   end
 
-  defp parse_type(param, type) do
-    raise Error, "Error invalid `#{type}` type for `#{param.names}` name."
+  defp parse_type(param, type) when is_atom(type) do
+    Code.ensure_loaded(type)
+
+    if function_exported?(type, :cast, 1) do
+      %{param | type: type}
+    else
+      raise Error, "invalid type `#{inspect(type)}` for `#{inspect(param.names)}` param."
+    end
   end
 end
