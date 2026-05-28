@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - GitHub Actions CI workflow covering Elixir 1.14–1.18 / OTP 25–27.
 
 ### Changed
-- Minimum Elixir requirement bumped to `~> 1.14`.
+- Minimum Elixir requirement bumped to `~> 1.15` (required by `phoenix ~> 1.7.22`, which is used in the test suite and pulled in via security advisory GHSA-628h-q48j-jr6q).
 - `Plug` dependency bumped to `~> 1.14`.
 - Test dependencies refreshed: `stream_data ~> 1.0`, `phoenix ~> 1.7`, `excoveralls ~> 0.18`, `ex_doc ~> 0.34`.
 - Error messages from `CastParams.Plug` now print dotted parameter paths (e.g. `param user.name is required`).
